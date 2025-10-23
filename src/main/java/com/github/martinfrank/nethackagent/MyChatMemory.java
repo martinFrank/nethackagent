@@ -1,4 +1,4 @@
-package com.github.martinfrank.nethackagent.nethackagent;
+package com.github.martinfrank.nethackagent;
 
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.memory.ChatMemory;

@@ -1,6 +1,6 @@
-package com.github.martinfrank.nethackagent.nethackagent.tools;
+package com.github.martinfrank.nethackagent.tools.quest;
 
-public class KolQuestSummary {
+public class Quest {
     private String id;
     private boolean isStarted;
     private boolean isFinished;

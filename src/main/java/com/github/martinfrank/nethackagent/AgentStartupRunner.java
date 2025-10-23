@@ -1,4 +1,4 @@
-package com.github.martinfrank.nethackagent.nethackagent;
+package com.github.martinfrank.nethackagent;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

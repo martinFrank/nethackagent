@@ -1,6 +1,10 @@
-package com.github.martinfrank.nethackagent.nethackagent.tools;
+package com.github.martinfrank.nethackagent.tools.player;
 
-public class KolCharacterSummary {
+import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfo;
+
+import java.util.Optional;
+
+public class PlayerInfo {
     private String username;
     private String password;
 
@@ -16,6 +20,8 @@ public class KolCharacterSummary {
     private long availableMeat;
     private long inebrity;
     private long fullness;
+    Optional<AdventureInfo> currentFight;
+
 
     public void setUsername(String username) {
         this.username = username;
@@ -69,6 +75,18 @@ public class KolCharacterSummary {
         this.fullness = fullness;
     }
 
+    public Optional<AdventureInfo> getCurrentFight() {
+        return currentFight;
+    }
+
+    public void setCurrentFight(AdventureInfo adventureSummary) {
+        this.currentFight = Optional.of(adventureSummary);
+    }
+
+    public void deleteCurrentFight() {
+        this.currentFight = Optional.empty();
+    }
+
     @Override
     public String toString() {
         return "KolCharacterSummary{" +
@@ -85,6 +103,7 @@ public class KolCharacterSummary {
                 ", availableMeat=" + availableMeat +
                 ", inebrity=" + inebrity +
                 ", fullness=" + fullness +
+                ", currentFight=" + currentFight +
                 '}';
     }
 }

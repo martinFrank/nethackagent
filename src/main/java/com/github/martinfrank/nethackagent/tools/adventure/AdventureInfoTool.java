@@ -1,46 +1,42 @@
-package com.github.martinfrank.nethackagent.nethackagent.tools;
+package com.github.martinfrank.nethackagent.tools.adventure;
 
+import com.github.martinfrank.nethackagent.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.KoLAdventure;
 import net.sourceforge.kolmafia.persistence.AdventureDatabase;
-import net.sourceforge.kolmafia.request.LoginRequest;
-import net.sourceforge.kolmafia.request.LogoutRequest;
 
 import java.util.List;
 
-public class KolAdventureSummaryTool {
+public class AdventureInfoTool {
 
     @Tool(
-            name = "KolAdventureSummaryTool"
+            name = "AdventureInfoTool"
             , value = """
-            erzeugt eine Liste von Adventures, die der Spieler erreichen kann.
+            erzeugt eine Liste von Adventures, die der Spieler gerade jetzt erreichen kann.
             Verwende dieses Tool, wenn du wissen willst, welche Orte vom Spieler besucht werden können.
             """
     )
-    public List<KolAdventureSummary> execute() {
+    public List<AdventureInfo> getAdventures() {
         System.out.println("execute KolAdventureSummaryTool...");
 
+        LoginManager.ensureLogin();
 
-        LoginRequest login = new LoginRequest(KolLoginData.USERNAME, KolLoginData.PASSWORD);
-
-        login.run();
         List<KoLAdventure> adventuresRaw = AdventureDatabase.getAsLockableListModel();
-        List<KolAdventureSummary> adventures = adventuresRaw.stream()
-                .map(KolAdventureSummaryTool::mapToSummary)
+        List<AdventureInfo> adventures = adventuresRaw.stream()
+                .map(AdventureInfoTool::mapToSummary)
                 .filter(adv -> ! adv.getParentZone().equals("Clan Basement"))
                 .filter(adv -> adv.getAdventureNumber() >= 0)
-                .filter(KolAdventureSummary::isCanAdventure)
+                .filter(AdventureInfo::isCanAdventure)
                 .toList();
 
-        LogoutRequest.getLastResponse();
         System.out.println("adventures");
         adventures.forEach(System.out::println);
 
         return adventures;
     }
 
-    private static KolAdventureSummary mapToSummary(KoLAdventure adv) {
-        KolAdventureSummary summary = new KolAdventureSummary();
+    public static AdventureInfo mapToSummary(KoLAdventure adv) {
+        AdventureInfo summary = new AdventureInfo();
         summary.setAdventureId(adv.getAdventureId());
         summary.setAdventureNumber(adv.getAdventureNumber());
         summary.setNonCombatsOnly(adv.isNonCombatsOnly());

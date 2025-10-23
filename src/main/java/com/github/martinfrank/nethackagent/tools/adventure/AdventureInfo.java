@@ -1,7 +1,7 @@
-package com.github.martinfrank.nethackagent.nethackagent.tools;
+package com.github.martinfrank.nethackagent.tools.adventure;
 
 
-public class KolAdventureSummary {
+public class AdventureInfo {
 
 
     private String zone;
