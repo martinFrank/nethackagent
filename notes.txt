@@ -1,0 +1,13 @@
+docker run -d \
+  --name postgres-pgvector \
+  -e POSTGRES_USER=your_user \
+  -e POSTGRES_PASSWORD=your_password \
+  -e POSTGRES_DB=your_database \
+  -p 5432:5432 \
+  ankane/pgvector
+
+docker run -d --name postgres-pgvector -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres_secret -e POSTGRES_DB=nethackagent -p 5432:5432 ankane/pgvector
+
+docker exec -it postgres-pgvector psql -U postgres -c 'create database nethackagent;'
+
+docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE EXTENSION IF NOT EXISTS vector;'
