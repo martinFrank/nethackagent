@@ -1,18 +1,17 @@
 package com.github.martinfrank.nethackagent;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfoTool;
 import com.github.martinfrank.nethackagent.tools.player.PlayerInfoTool;
 import com.github.martinfrank.nethackagent.tools.quest.QuestListTool;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import io.quarkiverse.langchain4j.pgvector.PgVectorEmbeddingStore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +25,11 @@ public class NethackAgent {
 //            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
             .build();
 
+    /**
+     * public interface PlanAgent {
+     *     String chat(@MemoryId Long sessionId, @UserMessage String prompt);
+     * }
+     */
     public interface PlanAgent {
         @SystemMessage("""
                 Du bist ein Planungsagent, der Aufgaben selbstständig plant und verfügbare Tools
@@ -109,15 +113,7 @@ public class NethackAgent {
                 .modelName("text-embedding-3-small")
                 .build();
 
-        EmbeddingStore store = PgVectorEmbeddingStore.builder()
-                .host("localhost")
-                .port(5432)
-                .database("nethackagent")
-                .user("postgres")
-                .password("postgres_secret")
-                .table("kol_embeddings")
-                .dimension(1536)
-                .build();
+        EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
 
         var retriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)
@@ -129,6 +125,7 @@ public class NethackAgent {
         PlanAgent planAgent = AiServices.builder(PlanAgent.class)
                 .chatModel(model)
                 .chatMemory(new MyChatMemory())
+//                .chatMemoryProvider(new PersistentMemoryProvider())
                 .contentRetriever(retriever)
                 .tools(Arrays.asList(
                         new PlayerInfoTool(),
