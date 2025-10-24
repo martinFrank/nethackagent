@@ -5,9 +5,14 @@ import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfoTool;
 import com.github.martinfrank.nethackagent.tools.player.PlayerInfoTool;
 import com.github.martinfrank.nethackagent.tools.quest.QuestListTool;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
+import dev.langchain4j.rag.DefaultRetrievalAugmentor;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import io.quarkiverse.langchain4j.pgvector.PgVectorEmbeddingStore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +20,8 @@ import java.util.List;
 
 public class NethackAgent {
 
-    private static final String OPENAI_API_KEY = "";
     static OpenAiChatModel model = OpenAiChatModel.builder()
-            .apiKey(OPENAI_API_KEY)
+            .apiKey(OpenAiConfig.OPENAI_API_KEY)
             .modelName("gpt-4o") // oder z.B. "gpt-3.5-turbo"
 //            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
             .build();
@@ -100,9 +104,32 @@ public class NethackAgent {
 
     public static void main(String[] args) {
 
+        var embeddingModel = OpenAiEmbeddingModel.builder()
+                .apiKey(OpenAiConfig.OPENAI_API_KEY)
+                .modelName("text-embedding-3-small")
+                .build();
+
+        EmbeddingStore store = PgVectorEmbeddingStore.builder()
+                .host("localhost")
+                .port(5432)
+                .database("nethackagent")
+                .user("postgres")
+                .password("postgres_secret")
+                .table("kol_embeddings")
+                .dimension(1536)
+                .build();
+
+        var retriever = EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(store)
+                .embeddingModel(embeddingModel)
+                .maxResults(5)
+                .minScore(0.5)
+                .build();
+
         PlanAgent planAgent = AiServices.builder(PlanAgent.class)
                 .chatModel(model)
                 .chatMemory(new MyChatMemory())
+                .contentRetriever(retriever)
                 .tools(Arrays.asList(
                         new PlayerInfoTool(),
                         new AdventureInfoTool(),
