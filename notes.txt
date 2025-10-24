@@ -11,3 +11,12 @@ docker run -d --name postgres-pgvector -e POSTGRES_USER=postgres -e POSTGRES_PAS
 docker exec -it postgres-pgvector psql -U postgres -c 'create database nethackagent;'
 
 docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE EXTENSION IF NOT EXISTS vector;'
+
+
+
+//für chatmemory
+CREATE TABLE chat_memory (
+    memory_id BIGINT PRIMARY KEY,
+    messages JSONB NOT NULL,
+    updated_at TIMESTAMP DEFAULT NOW()
+);
