@@ -20,7 +20,7 @@ public class WebCrawler {
         }
 
         try {
-            System.out.println("Crawling: " + url);
+            System.out.println("size = "+visited.size() + "  still Crawling: " + url);
             visited.add(url);
 
             Document doc = Jsoup.connect(url)
@@ -29,9 +29,11 @@ public class WebCrawler {
                     .timeout(10000)
                     .get();
 
+            //alle urls dieser Seite crawlen (baer: mit depth-1, damit es nicht ewig tief geht)
             Elements links = doc.select("a[href]");
             for (Element link : links) {
                 String next = link.absUrl("href");
+                //alle ? nicht alle! nur Seiten, die von der haputseite abzweigen, ekine external links verfolgen
                 if (next.startsWith(url) || next.startsWith(getBaseUrl(url))) {
                     crawl(next, depth - 1);
                 }
