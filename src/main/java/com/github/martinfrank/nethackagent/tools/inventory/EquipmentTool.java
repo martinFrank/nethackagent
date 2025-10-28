@@ -6,14 +6,13 @@ import net.sourceforge.kolmafia.AdventureResult;
 import net.sourceforge.kolmafia.equipment.Slot;
 import net.sourceforge.kolmafia.persistence.ItemDatabase;
 import net.sourceforge.kolmafia.session.EquipmentManager;
-import net.sourceforge.kolmafia.session.InventoryManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class EquipmentListTool {
+public class EquipmentTool {
 
     @Tool(
             name = "EquipmentListTool"
@@ -24,6 +23,7 @@ public class EquipmentListTool {
             """
     )
     public List<Item> getEquipment() {
+        System.out.println("using equipment tool");
         LoginManager.ensureLogin();
 
         Map<Integer, String> rawItems = ItemDatabase.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -42,6 +42,7 @@ public class EquipmentListTool {
                 items.add(item);
             }
         }
+        items.forEach(System.out::println);
 
         return items;
     }

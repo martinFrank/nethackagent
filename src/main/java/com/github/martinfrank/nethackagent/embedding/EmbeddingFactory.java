@@ -1,8 +1,6 @@
 package com.github.martinfrank.nethackagent.embedding;
 
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import io.quarkiverse.langchain4j.pgvector.PgVectorEmbeddingStore;
 
 public class EmbeddingFactory {

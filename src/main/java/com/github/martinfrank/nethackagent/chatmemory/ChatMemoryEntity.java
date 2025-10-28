@@ -7,8 +7,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "chat_memory")
 public class ChatMemoryEntity {
+
     @Id
-    private Long memoryId;
+    @Column (name = "memory_id")
+    private Long id;
 
     @Lob
     @Column(columnDefinition = "jsonb")
@@ -16,13 +18,14 @@ public class ChatMemoryEntity {
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public Long getMemoryId() {
-        return memoryId;
+    public Long getId() {
+        return id;
     }
 
-    public void setMemoryId(Long memoryId) {
-        this.memoryId = memoryId;
+    public void setId(Long id) {
+        this.id = id;
     }
+
 
     public String getMessages() {
         return messages;
@@ -43,7 +46,7 @@ public class ChatMemoryEntity {
     @Override
     public String toString() {
         return "ChatMemoryEntity{" +
-                "memoryId=" + memoryId +
+                "id=" + id +
                 ", messages='" + messages + '\'' +
                 ", updatedAt=" + updatedAt +
                 '}';

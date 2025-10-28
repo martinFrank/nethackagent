@@ -2,12 +2,12 @@ package com.github.martinfrank.nethackagent.chatmemory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,15 +15,21 @@ import java.util.Optional;
 @Component
 public class PostgresChatMemoryStore implements ChatMemoryStore {
 
-    @Autowired
+
     private ChatMemoryRepository chatMemoryRepository;
+
+    @Autowired
+    public PostgresChatMemoryStore(ChatMemoryRepository chatMemoryRepository) {
+        this.chatMemoryRepository = chatMemoryRepository;
+    }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public List<ChatMessage> getMessages(Object memoryId) {
+        System.out.println("getMessages: memoryId="+memoryId);
         Optional<List<ChatMessage>> result =
-         chatMemoryRepository.findById((Long) memoryId)
+         chatMemoryRepository.findById((Long) memoryId)//FIXME find by memoryID
                 .map(entity -> {
                     try {
                         return objectMapper.readValue(
@@ -35,7 +41,6 @@ public class PostgresChatMemoryStore implements ChatMemoryStore {
                         return Collections.emptyList();
                     }
                 });
-
         return result.orElse(Collections.emptyList());
     }
 
@@ -45,7 +50,6 @@ public class PostgresChatMemoryStore implements ChatMemoryStore {
         try {
             String json = objectMapper.writeValueAsString(messages);
             ChatMemoryEntity entity = new ChatMemoryEntity();
-            entity.setMemoryId((Long) memoryId);
             entity.setMessages(json);
             chatMemoryRepository.save(entity);
         } catch (Exception e) {
@@ -57,4 +61,6 @@ public class PostgresChatMemoryStore implements ChatMemoryStore {
     public void deleteMessages(Object memoryId) {
         chatMemoryRepository.deleteById((Long) memoryId);
     }
+
+
 }

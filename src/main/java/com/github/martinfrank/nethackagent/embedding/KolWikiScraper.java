@@ -33,17 +33,24 @@ public class KolWikiScraper {
                 .documentSplitter(DocumentSplitters.recursive(500, 100))
                 .build();
 
-        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Main_Page";
+//        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Main_Page";
+//        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Category:Items";
+//        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Elements#google_vignette";
+//        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Items_by_Name_(A)";
+//        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Beginner%27s_guide";
+//        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Game_Mechanics";
+        String kolWikiHomepage = "https://kol.coldfront.net/thekolwiki/index.php/Quest_Spoilers";
         WebCrawler crawler = new WebCrawler();
-        crawler.crawl(kolWikiHomepage, 16);
+        crawler.crawl(kolWikiHomepage, 2);
         Set<String> urls = crawler.getVisited();
         List<String> urlsWithoutFiles = urls.stream().filter(f -> ! f.contains("File:")).toList();
 
-        for (String url : urlsWithoutFiles) {
+        for (int i = 0; i < urlsWithoutFiles.size(); i++) {
+            String url = urlsWithoutFiles.get(i);
             try {
                 Document wikiDoc = UrlDocumentLoader.load(url, new TextDocumentParser());
                 ingestor.ingest(wikiDoc);
-                System.out.println("sucessfully read url " + url);
+                System.out.println(i+"/"+urlsWithoutFiles.size()+": sucessfully read url " + url);
             } catch (Exception _) {
                 System.out.println("error reading url " + url);
             }

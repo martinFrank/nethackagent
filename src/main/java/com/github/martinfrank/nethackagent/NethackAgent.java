@@ -1,121 +1,64 @@
 package com.github.martinfrank.nethackagent;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.martinfrank.nethackagent.agent.PlanAgent;
+import com.github.martinfrank.nethackagent.agent.PlanValidator;
+import com.github.martinfrank.nethackagent.agent.TaskExecutorAgent;
+import com.github.martinfrank.nethackagent.agent.TaskExecutorValidator;
+import com.github.martinfrank.nethackagent.chatmemory.ChatMemoryRepository;
+import com.github.martinfrank.nethackagent.chatmemory.NoSpringProvider;
+import com.github.martinfrank.nethackagent.chatmemory.PersistentMemoryProvider;
+import com.github.martinfrank.nethackagent.chatmemory.PostgresChatMemoryStore;
 import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfoTool;
+import com.github.martinfrank.nethackagent.tools.inventory.EquipmentTool;
+import com.github.martinfrank.nethackagent.tools.inventory.InventoryTool;
 import com.github.martinfrank.nethackagent.tools.player.PlayerInfoTool;
 import com.github.martinfrank.nethackagent.tools.quest.QuestListTool;
+import com.github.martinfrank.nethackagent.tools.skill.SkillTool;
+import com.github.martinfrank.nethackagent.tools.wiki.WikiTool;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
-import dev.langchain4j.service.SystemMessage;
-import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+@Component
 public class NethackAgent {
-
-    static OpenAiChatModel model = OpenAiChatModel.builder()
-            .apiKey(OpenAiConfig.OPENAI_API_KEY)
-            .modelName("gpt-4o") // oder z.B. "gpt-3.5-turbo"
-//            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
-            .build();
-
-    /**
-     * public interface PlanAgent {
-     *     String chat(@MemoryId Long sessionId, @UserMessage String prompt);
-     * }
-     */
-    public interface PlanAgent {
-        @SystemMessage("""
-                Du bist ein Planungsagent, der Aufgaben selbstständig plant und verfügbare Tools
-                verwenden kann, um fehlende Informationen aus dem Internet zu beschaffen.
-                
-                Verwende die bereitgestellten Tools, wenn sie für die Beantwortung der Benutzeraufgabe hilfreich sind.
-                Wenn Informationen erforderlich sind, die du nicht kennst, suche sie mit den Tools, anstatt Annahmen zu treffen.
-                
-                Dein Ziel:
-                1. Analysiere die Benutzeraufgabe.
-                2. Wenn nötig, nutze Tools, um aktuelle Daten zu erhalten.
-                3. Erstelle dann einen klaren, umsetzbaren Plan in nummerierten Schritten. Liste nur die Schritte auf, keine weitere Erklärungen sind nötig
-                """)
-        String createPlan(@UserMessage String aufgabe);
-    }
-
-    public interface TaskExecutorAgent {
-        @SystemMessage("""
-                Du bist ein Agent, der ein Computerspiel bedienen kann. Du bekommst Aufgaben, die für das
-                Spiel "Kingdom of Loathing" erstellt sind.
-                
-                Dein Ziel:
-                1. Analysiere die Benutzeraufgabe.
-                2. Wenn nötig, nutze Tools, um um die Aufgabe durchzuführen.
-                3. Liefere einen Bericht, wie gut die Ausführung der Aufgabe geklappt hat
-                """)
-        String executeTask(@UserMessage String aufgabe);
-    }
-
-
-    public interface PlanValidator {
-        @SystemMessage("""
-                Du bekommst einen Datenpaket, das aus einem entwickelte Plan der dazu gehörigen Aufgabe besteht.
-                Deine Aufgabe ist es zu überprüfen, ob der Plan plausibel erscheint.
-                
-                Struktur des Datenpakets:
-                {
-                    "planRequest":"die Aufgabenstellung",
-                    "planResult":"der entwickelte Plan"
-                }
-                
-                Antworte nur mit true/false, denn die Ausgabe wird geparsed (Boolean.parse)
-                """)
-        String isPlanSuccessful(@UserMessage String requestJson);
-    }
-
-
-    //Agenten können keine Records verarbeiten
-    public static class TaskExecutionValidationRequest {
-        @JsonProperty public String task;
-        @JsonProperty public String result;
-
-        public TaskExecutionValidationRequest(String task, String result) {
-            this.task = task;
-            this.result = result;
-        }
-    }
-
-
-
-    public interface TaskExecutorValidator {
-        @UserMessage("""
-                Prüfe, ob die Ausführung des Tasks erfolgreich war. Wurde im Task gar nichts
-                gemacht, ist der Task erfolgreich.
-                
-                Task: TaskExecutionValidationRequest.task
-                Ausführung: TaskExecutionValidationRequest.result
-                
-                Antworte nur mit true/false, denn die Ausgabe wird geparsed (Boolean.parse)
-                """)
-        boolean isTaskSuccessful(TaskExecutionValidationRequest request);
-    }
 
     public record TaskExecution(String task, String result, boolean success) {
     }
 
     public static void main(String[] args) {
+        new NethackAgent().runAgent();
+    }
 
-        var embeddingModel = OpenAiEmbeddingModel.builder()
+    public void runAgent() {
+
+        OpenAiChatModel model = OpenAiChatModel.builder()
+                .apiKey(OpenAiConfig.OPENAI_API_KEY)
+                .modelName("gpt-4o") // oder z.B. "gpt-3.5-turbo"
+//            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
+                .build();
+
+        OpenAiEmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
                 .apiKey(OpenAiConfig.OPENAI_API_KEY)
                 .modelName("text-embedding-3-small")
                 .build();
 
-        EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
+        ApplicationContext context = new AnnotationConfigApplicationContext(NoSpringProvider.class);
+        ChatMemoryRepository myEntityRepository = context.getBean(ChatMemoryRepository.class);
 
-        var retriever = EmbeddingStoreContentRetriever.builder()
+        EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
+        PersistentMemoryProvider memoryProvider  = new PersistentMemoryProvider(
+                new PostgresChatMemoryStore(myEntityRepository) );
+
+        EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)
                 .embeddingModel(embeddingModel)
                 .maxResults(5)
@@ -124,56 +67,53 @@ public class NethackAgent {
 
         PlanAgent planAgent = AiServices.builder(PlanAgent.class)
                 .chatModel(model)
-                .chatMemory(new MyChatMemory())
-//                .chatMemoryProvider(new PersistentMemoryProvider())
+//                .chatMemory(new MyChatMemory())
+                .chatMemoryProvider(memoryProvider)
                 .contentRetriever(retriever)
-                .tools(Arrays.asList(
+                .tools(List.of(
                         new PlayerInfoTool(),
+                        new InventoryTool(),
+                        new EquipmentTool(),
+                        new SkillTool(),
                         new AdventureInfoTool(),
                         new QuestListTool()))
                 .build();
 
-        PlanValidator planValidator = AiServices.builder(PlanValidator.class)
-                .chatModel(model)
-                .build();
+//        PlanValidator planValidator = AiServices.builder(PlanValidator.class)
+//                .chatModel(model)
+//                .build();
 
-        TaskExecutorAgent taskExecutor = AiServices.builder(TaskExecutorAgent.class)
-                .chatModel(model)
-                .chatMemory(new MyChatMemory())
-//                .tools(Arrays.asList(
-//                        new KolCharacterSummaryTool(),
-//                        new KolAdventureSummaryTool(),
-//                        new KolQuestSummaryTool()))
-                .build();
+//        TaskExecutorAgent taskExecutor = AiServices.builder(TaskExecutorAgent.class)
+//                .chatModel(model)
+//                .chatMemory(new MyChatMemory())
+////                .tools(Arrays.asList(
+////                        new KolCharacterSummaryTool(),
+////                        new KolAdventureSummaryTool(),
+////                        new KolQuestSummaryTool()))
+//                .build();
 
-        TaskExecutorValidator taskValidator = AiServices.builder(TaskExecutorValidator.class)
-                .chatModel(model)
-                .build();
+//        TaskExecutorValidator taskValidator = AiServices.builder(TaskExecutorValidator.class)
+//                .chatModel(model)
+//                .build();
 
         // Aufgabe: Plan erstellen
         String planRequest = """
-                Du sollst für einen Spieler von "Kingdom of Loathing" des nächsten Abenteuer
-                (kostet einen AdventurePoint) aussuchen. Prüfe, welche Abenteuer verfügbar
-                sind und benenne das Abenteuer, das am besten zu den aktuellen Quests
-                passt und am meisten Beute oder Erfahrung bringt.
-                
-                Die Liste soll so aussehen:
-                - Welche Schritte können vorab durchgeführt um unnötigen Ballast abzuwerfen?
-                - Welche Schritte können vorab durchgeführt werden um die Erfolgschancen zu verbessern?
-                - das eine Abenteuer, dass betreten werden soll.
-                
-                Gib die Schritte als nummerierte Liste aus, füge keine Erklärung hinzu.
+                Du sollst für einen Spieler von "Kingdom of Loathing" den Weg zur Ascension begleiten.
+                Bestimme dazu, welches quest aktuell verfolgt werden soll und welche Location (adventure)
+                dazu besucht werden soll. Prüfe vorab, wie weit der Spieler bisher gekommen ist, um eine.
+                passende Auswahl zu treffen.
                 """;
-        String thePlan = planAgent.createPlan(planRequest);
+        Long chatId = 2L;
+        String thePlan = planAgent.createPlan(chatId, planRequest);
+
+
         System.out.println("-------the plan-------");
         System.out.println(thePlan);
 
-
-
         // Erfolg prüfen
-        String isPlanValid = planValidator.isPlanSuccessful(new PlanValidationRequest(planRequest, thePlan).toJson());
-        System.out.println("-------plan validation-------");
-        System.out.println("plan is valid? " + isPlanValid);
+//        String isPlanValid = planValidator.isPlanSuccessful(new PlanValidationRequest(planRequest, thePlan).toJson());
+//        System.out.println("-------plan validation-------");
+//        System.out.println("plan is valid? " + isPlanValid);
 
         List<TaskExecution> executions = new ArrayList<>();
         for (String task : thePlan.split("\n")) {
@@ -190,5 +130,6 @@ public class NethackAgent {
 //        executions.forEach(System.out::println);
 
         LoginManager.logout();
+
     }
 }
