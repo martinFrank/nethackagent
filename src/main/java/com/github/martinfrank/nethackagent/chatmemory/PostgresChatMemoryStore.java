@@ -65,7 +65,7 @@ public class PostgresChatMemoryStore implements ChatMemoryStore {
             ChatMemoryEntity entity = new ChatMemoryEntity();
             entity.setMemoryId((Long)memoryId);
             entity.setMessageType(SYSTEM);
-            entity.setMessage(systemMessage.text());
+            entity.setMessage(GSON.toJson(systemMessage));
             return entity;
         }
         if(cm instanceof UserMessage userMessage){
