@@ -47,12 +47,17 @@ public class NethackChat {
 
         Scanner scanner = new Scanner(System.in);
         String request;
+
+        System.out.println("hier ist dein KoL chat bot - frag mich!");
+
         while(true){
             request = scanner.nextLine();
-            if("exit".equalsIgnoreCase(request)){
+            if(request == null || request.isEmpty()){
+                continue;
+            }
+            if(request.toLowerCase().startsWith("exit")){
                 break;
             }
-
             String strict = " Nutze nur Informationen aus dem embedding.";
 //            String antwort = chain.execute("erkläre mir, was man alles tun muss im in Kingdom of Loathing zur Ascension zu kommen? nutze nur informationen aus dem embedding.");
             String antwort = chain.execute(request+strict);

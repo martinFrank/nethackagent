@@ -76,9 +76,9 @@ public class KolWikiScraper {
                 Document transformed = new HtmlToTextDocumentTransformer().transform(wikiDoc);
                 System.out.print(" --> ingesting");
                 ingestor.ingest(transformed);
-                System.out.println(" success");
+                System.out.println(" --> success");
             } catch (Exception _) {
-                System.out.println(" failed");
+                System.out.println(" --> FAILED!!!!");
             }
         }
     }
