@@ -1,13 +1,7 @@
 package com.github.martinfrank.nethackagent;
 
 import com.github.martinfrank.nethackagent.agent.PlanAgent;
-import com.github.martinfrank.nethackagent.agent.PlanValidator;
-import com.github.martinfrank.nethackagent.agent.TaskExecutorAgent;
-import com.github.martinfrank.nethackagent.agent.TaskExecutorValidator;
-import com.github.martinfrank.nethackagent.chatmemory.ChatMemoryRepository;
-import com.github.martinfrank.nethackagent.chatmemory.NoSpringProvider;
 import com.github.martinfrank.nethackagent.chatmemory.PersistentMemoryProvider;
-import com.github.martinfrank.nethackagent.chatmemory.PostgresChatMemoryStore;
 import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfoTool;
 import com.github.martinfrank.nethackagent.tools.inventory.EquipmentTool;
@@ -15,18 +9,15 @@ import com.github.martinfrank.nethackagent.tools.inventory.InventoryTool;
 import com.github.martinfrank.nethackagent.tools.player.PlayerInfoTool;
 import com.github.martinfrank.nethackagent.tools.quest.QuestListTool;
 import com.github.martinfrank.nethackagent.tools.skill.SkillTool;
-import com.github.martinfrank.nethackagent.tools.wiki.WikiTool;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -52,12 +43,7 @@ public class NethackAgent {
                 .modelName("text-embedding-3-small")
                 .build();
 
-//        ApplicationContext context = new AnnotationConfigApplicationContext(NoSpringProvider.class);
-//        ChatMemoryRepository myEntityRepository = context.getBean(ChatMemoryRepository.class);
-
-        EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
-//        PersistentMemoryProvider memoryProvider  = new PersistentMemoryProvider(
-//                new PostgresChatMemoryStore(myEntityRepository) );
+        EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
 
         EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)

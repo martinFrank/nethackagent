@@ -2,6 +2,7 @@ package com.github.martinfrank.nethackagent;
 
 import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import dev.langchain4j.chain.ConversationalRetrievalChain;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
@@ -28,7 +29,7 @@ public class NethackChat {
                 .modelName("text-embedding-3-small")
                 .build();
 
-        EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
+        EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
 
         EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)

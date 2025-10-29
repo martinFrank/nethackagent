@@ -10,6 +10,4 @@ public class NetHackAgentApplication {
 		SpringApplication.run(NetHackAgentApplication.class, args);
 	}
 
-
-
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class PostgresChatMemoryStore implements ChatMemoryStore {
 
-    private ChatMemoryRepository chatMemoryRepository;
+    private final ChatMemoryRepository chatMemoryRepository;
 
     private static final String AI = "AI";
     private static final String SYSTEM = "SYSTEM";

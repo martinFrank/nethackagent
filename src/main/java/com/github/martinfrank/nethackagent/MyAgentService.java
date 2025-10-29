@@ -13,7 +13,7 @@ public class MyAgentService {
         this.agent = agent;
     }
     public void startAgent() {
-        System.out.println("agent could be startet here");
+        System.out.println("starting agent...");
         agent.runAgent();
     }
 }

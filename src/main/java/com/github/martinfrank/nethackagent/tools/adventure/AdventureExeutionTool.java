@@ -35,14 +35,6 @@ public class AdventureExeutionTool {
         PlayerInfo playerBefore = new PlayerInfoTool().getPlayerInfo();
         Inventory inventoryBefore = new Inventory(new InventoryTool().getInventory());
 
-//        KoLAdventure last = KoLAdventure.lastVisitedLocation();
-//        if(last != null){
-//            LogoutRequest.getLastResponse();
-//            return "you are already in a fight in adventure "+last.getAdventureName();
-//        }
-
-        //-------------------
-
         KoLAdventure adventure = AdventureDatabase.getAdventure(adventureName);
         System.out.println("you entered adventure: "+adventure.getAdventureName());
         RequestThread.postRequest(adventure);
@@ -71,9 +63,8 @@ public class AdventureExeutionTool {
             result.setWasSuccess(true);
             System.out.println(result);
             return result;
-//            return "you successfully made the adventure "+last.getAdventureName();
         }
-//        return "you could not enter the adventure "+adventureName;
+
         return new AdventureExecutionResult(); //default: isSuccess=false
 
     }

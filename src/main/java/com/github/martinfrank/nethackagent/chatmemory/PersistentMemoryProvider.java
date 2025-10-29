@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersistentMemoryProvider implements ChatMemoryProvider {
 
-
-    private PostgresChatMemoryStore store;
+    private final PostgresChatMemoryStore store;
 
     @Autowired
     public PersistentMemoryProvider(PostgresChatMemoryStore store) {
