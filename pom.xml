@@ -90,6 +90,12 @@
             </exclusions>
 		    <version>1.7.1</version>
 		</dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-document-transformer-jsoup</artifactId>
+            <version>1.8.0-beta15</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-open-ai -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
