@@ -18,7 +18,7 @@ public class PlayerInfoTool {
     )
     public PlayerInfo getPlayerInfo() {
 
-        System.out.println("getPlayerInfo...");
+        System.out.println("using playerInfoTool...");
         LoginManager.ensureLogin();
 
 
@@ -36,12 +36,8 @@ public class PlayerInfoTool {
         summary.setAvailableMeat(KoLCharacter.getAvailableMeat());
         summary.setInebrity(KoLCharacter.getInebriety());
         summary.setFullness(KoLCharacter.getFullness());
-        KoLAdventure last = KoLAdventure.lastVisitedLocation();
-        if(last == null){
-            summary.deleteCurrentFight();
-        }else{
-            summary.setCurrentFight(AdventureInfoTool.mapToSummary(last));
-        }
+        summary.setClassName(KoLCharacter.getAscensionClass().getName());
+        summary.setLastVisitedAdventure(AdventureInfoTool.mapToSummary(KoLAdventure.lastVisitedLocation()));
 
         System.out.println("character");
         System.out.println(summary);

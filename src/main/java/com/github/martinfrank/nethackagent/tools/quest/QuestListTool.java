@@ -29,7 +29,7 @@ public class QuestListTool {
                         || q.getPref().startsWith("questM") //market
                         || q.getPref().startsWith("questS") //sea
                 ) //council
-                .map(QuestListTool::mapToSummary)
+                .map(QuestListTool::mapToQuest)
                 .toList();
 
         System.out.println("quests");
@@ -38,9 +38,10 @@ public class QuestListTool {
         return quests;
     }
 
-    private static Quest mapToSummary(QuestDatabase.Quest quest) {
+    private static Quest mapToQuest(QuestDatabase.Quest quest) {
         Quest summary = new Quest();
         summary.setId(quest.toString());
+        summary.setName(QuestDatabase.prefToTitle(quest.getPref()));
         summary.setStarted(QuestDatabase.isQuestStarted(quest));
         summary.setFinished(QuestDatabase.isQuestFinished(quest));
         summary.setStatus(quest.getStatus());

@@ -17,7 +17,7 @@ public class AdventureInfoTool {
             """
     )
     public List<AdventureInfo> getAdventures() {
-        System.out.println("execute KolAdventureSummaryTool...");
+        System.out.println("using AdventureInfoTool...");
 
         LoginManager.ensureLogin();
 

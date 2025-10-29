@@ -15,8 +15,12 @@ docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE EX
 
 
 //für chatmemory
-CREATE TABLE chat_memory (
-    memory_id BIGINT PRIMARY KEY,
-    messages JSONB NOT NULL,
-    updated_at TIMESTAMP DEFAULT NOW()
+CREATE TABLE public.chat_memory (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  message VARCHAR NULL,
+  updated_at TIMESTAMP DEFAULT now() NULL,
+  message_type VARCHAR NULL,
+  memory_id BIGINT NULL
 );
+
+docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE TABLE public.chat_memory ( id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, message VARCHAR NULL, updated_at TIMESTAMP DEFAULT now() NULL,  message_type VARCHAR NULL, memory_id BIGINT NULL );'

@@ -2,9 +2,12 @@ package com.github.martinfrank.nethackagent.tools.quest;
 
 public class Quest {
     private String id;
+
+    private String name;
     private boolean isStarted;
     private boolean isFinished;
     private String status;
+
     public String getId() {
         return id;
     }
@@ -13,6 +16,13 @@ public class Quest {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public boolean isStarted() {
         return isStarted;
@@ -37,10 +47,12 @@ public class Quest {
     public void setStatus(String status) {
         this.status = status;
     }
+
     @Override
     public String toString() {
-        return "KolQuestSummary{" +
+        return "Quest{" +
                 "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", isStarted=" + isStarted +
                 ", isFinished=" + isFinished +
                 ", status='" + status + '\'' +

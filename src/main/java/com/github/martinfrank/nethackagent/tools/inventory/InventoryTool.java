@@ -2,13 +2,14 @@ package com.github.martinfrank.nethackagent.tools.inventory;
 
 import com.github.martinfrank.nethackagent.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
+import net.sourceforge.kolmafia.objectpool.ItemPool;
 import net.sourceforge.kolmafia.persistence.ItemDatabase;
 import net.sourceforge.kolmafia.session.InventoryManager;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class InventoryListTool {
+public class InventoryTool {
 
     @Tool(
             name = "InventoryListTool"
@@ -19,6 +20,7 @@ public class InventoryListTool {
             """
     )
     public List<Item> getInventory() {
+        System.out.println("using inventory tool");
         LoginManager.ensureLogin();
 
         Map<Integer, String> rawItems = ItemDatabase.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -33,10 +35,13 @@ public class InventoryListTool {
                 item.setCount(count);
                 item.setName(rawItems.get(itemId));
                 item.setId(itemId);
-                items.add(item);
+                item.setPrice(ItemDatabase.getPriceById(itemId));
                 item.setSlot("INVENTORY");
+                items.add(item);
             }
         }
+
+        items.forEach(System.out::println);
 
         return items;
     }

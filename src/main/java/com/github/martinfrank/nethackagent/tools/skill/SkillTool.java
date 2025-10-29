@@ -21,7 +21,7 @@ public class SkillTool {
             """
     )
     public List<Skill> getSkills() {
-
+        System.out.println("using skill tool");
         LoginManager.ensureLogin();
 
         List<Skill> skills = new ArrayList<>();
@@ -39,6 +39,8 @@ public class SkillTool {
                 skills.add(skill);
             }
         }
+
+        skills.forEach(System.out::println);
 
         return skills;
     }

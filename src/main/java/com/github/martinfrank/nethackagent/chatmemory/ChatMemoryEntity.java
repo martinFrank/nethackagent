@@ -7,45 +7,72 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "chat_memory")
 public class ChatMemoryEntity {
+
     @Id
-    private Long memoryId;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Lob
-    @Column(columnDefinition = "jsonb")
-    private String messages;
+    @Column (name = "memory_id")
+    private Long memory_id;
 
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column (name = "message_type")
+    private String message_type;
+
+    @Column(name = "message")
+    private String message;
+
+    @Column (name = "updated_at")
+    private LocalDateTime updated_at = LocalDateTime.now();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getMemoryId() {
-        return memoryId;
+        return memory_id;
     }
 
-    public void setMemoryId(Long memoryId) {
-        this.memoryId = memoryId;
+    public void setMemoryId(Long memory_id) {
+        this.memory_id = memory_id;
     }
 
-    public String getMessages() {
-        return messages;
+    public String getMessageType() {
+        return message_type;
     }
 
-    public void setMessages(String messages) {
-        this.messages = messages;
+    public void setMessageType(String messageType) {
+        this.message_type = messageType;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public String getMessage() {
+        return message;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public LocalDateTime getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(LocalDateTime updated_at) {
+        this.updated_at = updated_at;
     }
 
     @Override
     public String toString() {
         return "ChatMemoryEntity{" +
-                "memoryId=" + memoryId +
-                ", messages='" + messages + '\'' +
-                ", updatedAt=" + updatedAt +
+                "id=" + id +
+                ", memory_id=" + memory_id +
+                ", message_type=" + message_type +
+                ", message='" + message + '\'' +
+                ", updated_at=" + updated_at +
                 '}';
     }
 }
