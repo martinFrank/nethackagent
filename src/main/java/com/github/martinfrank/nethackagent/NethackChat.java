@@ -3,11 +3,12 @@ package com.github.martinfrank.nethackagent;
 import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import dev.langchain4j.chain.ConversationalRetrievalChain;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+
+import java.util.Scanner;
 
 
 public class NethackChat {
@@ -38,33 +39,26 @@ public class NethackChat {
                 .minScore(0.5)
                 .build();
 
-        // (2) Eigener PromptTemplate für System- und User-Prompt
-        PromptTemplate template = PromptTemplate.from(
-                "System: Du bist ein hilfreicher AI-Assistent.\n"
-                        + "Kontext: {context}\n"
-                        + "Vergangene Unterhaltung: {chat_history}\n"
-                        + "User: {question}\n"
-        );
-
-//        DefaultRetrievalAugmentor augmentor = DefaultRetrievalAugmentor.builder()
-//                .contentRetriever(retriever)
-//                .
-//                .promptTemplate(template)
-//                .build();
-
-        // (5) ConversationalRetrievalChain bauen
         ConversationalRetrievalChain chain = ConversationalRetrievalChain.builder()
                 .chatModel(model)
-//                .retrievalAugmentor(augmentor)
                 .chatMemory(new MyChatMemory())
                 .contentRetriever(retriever)
                 .build();
 
-        // (6) Nutzeranfrage ausführen
-//        String antwort = chain.execute("welche gegenstände von Kingdom of loathing kennst du? liste nur items auf die aus dem embedding her kennst. Die liste sollte min 20 items enthalten");
-        String antwort = chain.execute("erkläre mir, was man alles tun muss im in Kingdom of Loathing zur Ascension zu kommen? nutze nur informationen aus dem embedding.");
-//        String antwort = chain.execute("welche gegenstände geben denn viel feuerschaden? erkläre mir nur sachen, die du aus dem embedding her kennst");
-        System.out.println(antwort);
+        Scanner scanner = new Scanner(System.in);
+        String request;
+        while(true){
+            request = scanner.nextLine();
+            if("exit".equalsIgnoreCase(request)){
+                break;
+            }
+
+            String strict = " Nutze nur Informationen aus dem embedding.";
+//            String antwort = chain.execute("erkläre mir, was man alles tun muss im in Kingdom of Loathing zur Ascension zu kommen? nutze nur informationen aus dem embedding.");
+            String antwort = chain.execute(request+strict);
+            System.out.println(antwort);
+        }
+
     }
 
 }

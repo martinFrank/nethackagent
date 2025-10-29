@@ -11,7 +11,15 @@ import java.util.Set;
 
 public class WebCrawler {
 
-    private final Set<String> visited = new HashSet<>();
+
+    private final Set<String> visited;
+
+    public WebCrawler(Set<String> visited) {
+        this.visited = visited;
+    }
+    public WebCrawler() {
+        this(new HashSet<>());
+    }
 
     public void crawl(String url, int depth) {
 

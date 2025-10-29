@@ -1,4 +1,4 @@
-package com.github.martinfrank.nethackagent;
+package com.github.martinfrank.nethackagent.agent;
 
 import com.google.gson.Gson;
 
