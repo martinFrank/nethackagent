@@ -1,14 +1,14 @@
 package com.github.martinfrank.nethackagent;
 
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MyAgentService {
 
-    private NethackAgent agent;
+    private final NethackAgent agent;
 
-    @Inject
+    @Autowired
     public MyAgentService(NethackAgent agent){
         this.agent = agent;
     }

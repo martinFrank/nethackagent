@@ -2,11 +2,9 @@ package com.github.martinfrank.nethackagent;
 
 import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import dev.langchain4j.chain.ConversationalRetrievalChain;
-import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 

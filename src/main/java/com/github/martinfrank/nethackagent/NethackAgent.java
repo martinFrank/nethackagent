@@ -21,6 +21,7 @@ import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -31,11 +32,11 @@ import java.util.List;
 @Component
 public class NethackAgent {
 
-    public record TaskExecution(String task, String result, boolean success) {
-    }
+    private final PersistentMemoryProvider memoryProvider;
 
-    public static void main(String[] args) {
-        new NethackAgent().runAgent();
+    @Autowired
+    public NethackAgent(PersistentMemoryProvider persistentMemoryProvider) {
+        this.memoryProvider = persistentMemoryProvider;
     }
 
     public void runAgent() {
@@ -51,12 +52,12 @@ public class NethackAgent {
                 .modelName("text-embedding-3-small")
                 .build();
 
-        ApplicationContext context = new AnnotationConfigApplicationContext(NoSpringProvider.class);
-        ChatMemoryRepository myEntityRepository = context.getBean(ChatMemoryRepository.class);
+//        ApplicationContext context = new AnnotationConfigApplicationContext(NoSpringProvider.class);
+//        ChatMemoryRepository myEntityRepository = context.getBean(ChatMemoryRepository.class);
 
         EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
-        PersistentMemoryProvider memoryProvider  = new PersistentMemoryProvider(
-                new PostgresChatMemoryStore(myEntityRepository) );
+//        PersistentMemoryProvider memoryProvider  = new PersistentMemoryProvider(
+//                new PostgresChatMemoryStore(myEntityRepository) );
 
         EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)
@@ -67,7 +68,6 @@ public class NethackAgent {
 
         PlanAgent planAgent = AiServices.builder(PlanAgent.class)
                 .chatModel(model)
-//                .chatMemory(new MyChatMemory())
                 .chatMemoryProvider(memoryProvider)
                 .contentRetriever(retriever)
                 .tools(List.of(
@@ -81,15 +81,6 @@ public class NethackAgent {
 
 //        PlanValidator planValidator = AiServices.builder(PlanValidator.class)
 //                .chatModel(model)
-//                .build();
-
-//        TaskExecutorAgent taskExecutor = AiServices.builder(TaskExecutorAgent.class)
-//                .chatModel(model)
-//                .chatMemory(new MyChatMemory())
-////                .tools(Arrays.asList(
-////                        new KolCharacterSummaryTool(),
-////                        new KolAdventureSummaryTool(),
-////                        new KolQuestSummaryTool()))
 //                .build();
 
 //        TaskExecutorValidator taskValidator = AiServices.builder(TaskExecutorValidator.class)
@@ -115,19 +106,6 @@ public class NethackAgent {
 //        System.out.println("-------plan validation-------");
 //        System.out.println("plan is valid? " + isPlanValid);
 
-        List<TaskExecution> executions = new ArrayList<>();
-        for (String task : thePlan.split("\n")) {
-            System.out.println("-------working on Task-------");
-            System.out.println(task);
-
-//            String result = taskExecutor.executeTask(task);
-//            boolean isTaskSuccessful = taskValidator.isTaskSuccessful(
-//                    new TaskExecutionValidationRequest(task, result));
-//            TaskExecution taskExecution = new TaskExecution(task, result, isTaskSuccessful);
-//            executions.add(taskExecution);
-            //FIXME stop, if one task failed
-        }
-//        executions.forEach(System.out::println);
 
         LoginManager.logout();
 

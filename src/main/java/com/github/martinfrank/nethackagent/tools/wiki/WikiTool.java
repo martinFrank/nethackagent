@@ -14,14 +14,13 @@ import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.StructuredTaskScope;
 
 public class WikiTool {
 
 
     @Tool(
-            name = "WikiTool"
-            , value = """
+            name = "WikiTool",
+            value = """
             diese Tool kann Detail-Informationen zum Spiel liefern. Es ist ein online
             Tool, das Informationen aus der "Kingdom of Loathing" Wiki Seite
             holen kann. Es kann Informationen über Items, Skills und Adventure liefern.
