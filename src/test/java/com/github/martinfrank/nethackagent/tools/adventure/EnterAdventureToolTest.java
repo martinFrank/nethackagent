@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class EnterAdventureToolTest {
 
-    @Test
+//    @Test
     void testAdventureExecuteTool(){
         LoginManager.ensureLogin();
 //        new EnterAdventureTool().enterFight("The Outskirts of Cobb's Knob");

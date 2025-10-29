@@ -4,8 +4,12 @@ import net.sourceforge.kolmafia.KoLCharacter;
 import net.sourceforge.kolmafia.request.ApiRequest;
 import net.sourceforge.kolmafia.request.LoginRequest;
 import net.sourceforge.kolmafia.session.LogoutManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginManager.class);
 
     public static final String USERNAME = "";
     public static final String PASSWORD = "";
@@ -14,11 +18,11 @@ public class LoginManager {
         ApiRequest request = new ApiRequest("status");
         request.run();
         if (request.responseText == null ||request.responseText.contains("limiteduser") || request.responseText.isEmpty()) {
-            System.out.println("Session ungültig oder ausgelaufen");
+            logger.info("Session ungültig oder ausgelaufen");
             return true;
         }
 
-        System.out.println("Session gültig");
+        logger.info("Session gültig");
         return false;
     }
 
@@ -27,23 +31,27 @@ public class LoginManager {
         login.run();
 
         if (!KoLCharacter.getUserName().equalsIgnoreCase(USERNAME)) {
-            System.out.println("Login fehlgeschlagen! - es konnten keine Spielerinformation ausgewertet werden");
+            logger.error("Login fehlgeschlagen! - es konnten keine Spielerinformation ausgewertet werden");
             throw new IllegalStateException("Login fehlgeschlagen! - es konnten keine Spielerinformation ausgewertet werden");
         }
     }
 
     public static void ensureLogin(){
-        System.out.println("ensure login");
+        logger.debug("ensure login");
         if(isLoggedOut()){
-            System.out.println("not logged in -> execute login");
+            logger.info("not logged in -> execute login");
             login();
         }else{
-            System.out.println("already logged in, continue");
+            logger.debug("already logged in, continue");
         }
     }
 
     public static void logout() {
         LogoutManager.logout();
-        System.out.println("logged out complete...");
+        logger.info("logged out complete...");
+    }
+
+    public static void main (String[] args){
+        logout();
     }
 }

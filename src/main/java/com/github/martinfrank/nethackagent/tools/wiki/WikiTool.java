@@ -10,6 +10,8 @@ import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -17,6 +19,7 @@ import java.net.URL;
 
 public class WikiTool {
 
+    private static final Logger logger = LoggerFactory.getLogger(WikiTool.class);
 
     @Tool(
             name = "WikiTool",
@@ -34,11 +37,11 @@ public class WikiTool {
             """
     )
     public boolean kolWikiSearch(String searchTerm) {
-        System.out.println("KoL Search Tool: searching for '"+searchTerm+"'");
+        logger.info("KoL Search Tool: searching for '{}'", searchTerm);
 //        String preparedSearchTerm = searchTerm.replace("\\s*", "%20");
 //        String url = "https://wiki.kingdomofloathing.com/index.php?search="+searchTerm;
         String startUrl = "https://kol.coldfront.net/thekolwiki/index.php?search="+searchTerm+"&title=Special%3ASearch&go=Go";
-        System.out.println("startUrl "+startUrl);
+        logger.debug("startUrl {}", startUrl);
 
 
         var embeddingModel = OpenAiEmbeddingModel.builder()
@@ -54,18 +57,18 @@ public class WikiTool {
                 .documentSplitter(DocumentSplitters.recursive(500, 100))
                 .build();
 
-        System.out.println("ready to read!!");
+        logger.debug("ready to read!!");
 
         try {
 
             String url = getFinalRedirectedUrl(startUrl);
-            System.out.println("url "+url);
+            logger.debug("url {}", url);
 
             Document wikiDoc = UrlDocumentLoader.load(url, new TextDocumentParser());
             ingestor.ingest(wikiDoc);
             return true;
         } catch (Exception e) {
-            System.out.println("error: "+e);
+            logger.error("error: ", e);
         }
         return false;
     }

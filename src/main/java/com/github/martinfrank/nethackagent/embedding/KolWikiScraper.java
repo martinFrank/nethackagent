@@ -10,12 +10,16 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class KolWikiScraper {
+
+    private static final Logger logger = LoggerFactory.getLogger(KolWikiScraper.class);
 
     public static void main(String[] args) {
         new KolWikiScraper().start();
@@ -68,17 +72,17 @@ public class KolWikiScraper {
 
         for (int i = 0; i < urlsWithoutFiles.size(); i++) {
             String url = urlsWithoutFiles.get(i);
-            System.out.print((i+1)+"/"+urlsWithoutFiles.size()+":" + url);
+            logger.info("{}/{}: {}", (i+1), urlsWithoutFiles.size(), url);
             try {
-                System.out.print(" --> reading");
+                logger.debug(" --> reading");
                 Document wikiDoc = UrlDocumentLoader.load(url, new TextDocumentParser());
-                System.out.print(" --> parsing");
+                logger.debug(" --> parsing");
                 Document transformed = new HtmlToTextDocumentTransformer().transform(wikiDoc);
-                System.out.print(" --> ingesting");
+                logger.debug(" --> ingesting");
                 ingestor.ingest(transformed);
-                System.out.println(" --> success");
-            } catch (Exception _) {
-                System.out.println(" --> FAILED!!!!");
+                logger.info(" --> success");
+            } catch (Exception e) {
+                logger.error(" --> FAILED!!!!", e);
             }
         }
     }

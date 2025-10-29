@@ -4,10 +4,14 @@ import com.github.martinfrank.nethackagent.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.KoLAdventure;
 import net.sourceforge.kolmafia.persistence.AdventureDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class AdventureInfoTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdventureInfoTool.class);
 
     @Tool(
             name = "AdventureInfoTool"
@@ -17,7 +21,7 @@ public class AdventureInfoTool {
             """
     )
     public List<AdventureInfo> getAdventures() {
-        System.out.println("using AdventureInfoTool...");
+        logger.debug("using AdventureInfoTool...");
 
         LoginManager.ensureLogin();
 
@@ -29,8 +33,8 @@ public class AdventureInfoTool {
                 .filter(AdventureInfo::isCanAdventure)
                 .toList();
 
-        System.out.println("adventures");
-        adventures.forEach(System.out::println);
+        logger.debug("adventures:");
+        adventures.forEach(adv -> logger.debug(" - {}", adv));
 
         return adventures;
     }

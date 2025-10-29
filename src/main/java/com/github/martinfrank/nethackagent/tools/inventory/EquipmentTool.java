@@ -6,6 +6,8 @@ import net.sourceforge.kolmafia.AdventureResult;
 import net.sourceforge.kolmafia.equipment.Slot;
 import net.sourceforge.kolmafia.persistence.ItemDatabase;
 import net.sourceforge.kolmafia.session.EquipmentManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class EquipmentTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(EquipmentTool.class);
 
     @Tool(
             name = "EquipmentListTool"
@@ -23,7 +27,7 @@ public class EquipmentTool {
             """
     )
     public List<Item> getEquipment() {
-        System.out.println("using equipment tool");
+        logger.debug("using equipment tool");
         LoginManager.ensureLogin();
 
         Map<Integer, String> rawItems = ItemDatabase.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -42,7 +46,7 @@ public class EquipmentTool {
                 items.add(item);
             }
         }
-        items.forEach(System.out::println);
+        items.forEach(item -> logger.debug(" - {}", item));
 
         return items;
     }

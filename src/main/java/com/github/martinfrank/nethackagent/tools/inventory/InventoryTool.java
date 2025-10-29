@@ -5,11 +5,15 @@ import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.objectpool.ItemPool;
 import net.sourceforge.kolmafia.persistence.ItemDatabase;
 import net.sourceforge.kolmafia.session.InventoryManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InventoryTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(InventoryTool.class);
 
     @Tool(
             name = "InventoryListTool"
@@ -20,7 +24,7 @@ public class InventoryTool {
             """
     )
     public List<Item> getInventory() {
-        System.out.println("using inventory tool");
+        logger.debug("using inventory tool");
         LoginManager.ensureLogin();
 
         Map<Integer, String> rawItems = ItemDatabase.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -41,7 +45,7 @@ public class InventoryTool {
             }
         }
 
-        items.forEach(System.out::println);
+        items.forEach(item -> logger.debug(" - {}", item));
 
         return items;
     }

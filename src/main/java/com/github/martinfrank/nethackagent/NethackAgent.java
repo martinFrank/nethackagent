@@ -1,3 +1,4 @@
+
 package com.github.martinfrank.nethackagent;
 
 import com.github.martinfrank.nethackagent.agent.PlanAgent;
@@ -15,6 +16,8 @@ import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +25,8 @@ import java.util.List;
 
 @Component
 public class NethackAgent {
+
+    private static final Logger logger = LoggerFactory.getLogger(NethackAgent.class);
 
     private final PersistentMemoryProvider memoryProvider;
 
@@ -31,26 +36,8 @@ public class NethackAgent {
     }
 
     public void runAgent() {
-
-        OpenAiChatModel model = OpenAiChatModel.builder()
-                .apiKey(OpenAiConfig.OPENAI_API_KEY)
-                .modelName("gpt-4o") // oder z.B. "gpt-3.5-turbo"
-//            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
-                .build();
-
-        OpenAiEmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
-                .apiKey(OpenAiConfig.OPENAI_API_KEY)
-                .modelName("text-embedding-3-small")
-                .build();
-
-        EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
-
-        EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(store)
-                .embeddingModel(embeddingModel)
-                .maxResults(5)
-                .minScore(0.5)
-                .build();
+        OpenAiChatModel model = createModel();
+        EmbeddingStoreContentRetriever retriever = createRetriever();
 
         PlanAgent planAgent = AiServices.builder(PlanAgent.class)
                 .chatModel(model)
@@ -84,16 +71,44 @@ public class NethackAgent {
         String thePlan = planAgent.createPlan(chatId, planRequest);
 
 
-        System.out.println("-------the plan-------");
-        System.out.println(thePlan);
+        logger.info("-------the plan-------");
+        logger.info("{}", thePlan);
 
         // Erfolg prüfen
 //        String isPlanValid = planValidator.isPlanSuccessful(new PlanValidationRequest(planRequest, thePlan).toJson());
-//        System.out.println("-------plan validation-------");
-//        System.out.println("plan is valid? " + isPlanValid);
+//        logger.info("-------plan validation-------");
+//        logger.info("plan is valid? {}", isPlanValid);
 
 
         LoginManager.logout();
 
+    }
+
+    private EmbeddingStoreContentRetriever createRetriever() {
+        OpenAiEmbeddingModel embeddingModel = createEmbeddingModel();
+
+        EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
+
+        return EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(store)
+                .embeddingModel(embeddingModel)
+                .maxResults(5)
+                .minScore(0.5)
+                .build();
+    }
+
+    private OpenAiEmbeddingModel createEmbeddingModel() {
+        return OpenAiEmbeddingModel.builder()
+                .apiKey(OpenAiConfig.OPENAI_API_KEY)
+                .modelName("text-embedding-3-small")
+                .build();
+    }
+
+    private OpenAiChatModel createModel() {
+        return OpenAiChatModel.builder()
+                .apiKey(OpenAiConfig.OPENAI_API_KEY)
+                .modelName("gpt-4o") // oder z.B. "gpt-3.5-turbo"
+//            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
+                .build();
     }
 }

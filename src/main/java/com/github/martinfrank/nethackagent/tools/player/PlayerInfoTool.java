@@ -5,8 +5,12 @@ import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfoTool;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.KoLAdventure;
 import net.sourceforge.kolmafia.KoLCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlayerInfoTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerInfoTool.class);
 
     @Tool(
             name = "PlayerInfoTool"
@@ -18,7 +22,7 @@ public class PlayerInfoTool {
     )
     public PlayerInfo getPlayerInfo() {
 
-        System.out.println("using playerInfoTool...");
+        logger.debug("using playerInfoTool...");
         LoginManager.ensureLogin();
 
 
@@ -39,8 +43,7 @@ public class PlayerInfoTool {
         summary.setClassName(KoLCharacter.getAscensionClass().getName());
         summary.setLastVisitedAdventure(AdventureInfoTool.mapToSummary(KoLAdventure.lastVisitedLocation()));
 
-        System.out.println("character");
-        System.out.println(summary);
+        logger.debug("character: {}", summary);
 
         return summary;
     }

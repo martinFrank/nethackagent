@@ -4,6 +4,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 public class WebCrawler {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebCrawler.class);
 
     private final Set<String> visited;
 
@@ -28,7 +31,7 @@ public class WebCrawler {
         }
 
         try {
-            System.out.println("size = "+visited.size() + "  still Crawling: " + url);
+            logger.debug("size = {}  still Crawling: {}", visited.size(), url);
             visited.add(url);
 
             Document doc = Jsoup.connect(url)
@@ -48,7 +51,7 @@ public class WebCrawler {
             }
 
         } catch (IOException e) {
-            System.err.println("Fehler beim Laden: " + url + " -> " + e.getMessage());
+            logger.error("Fehler beim Laden: {} -> {}", url, e.getMessage());
         }
     }
 
