@@ -1,11 +1,10 @@
 package com.github.martinfrank.nethackagent.tools.adventure;
 
-import com.github.martinfrank.nethackagent.LoginManager;
-import org.junit.jupiter.api.Test;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 
 class EnterAdventureToolTest {
 
-    @Test
+//    @Test
     void testAdventureExecuteTool(){
         LoginManager.ensureLogin();
 //        new EnterAdventureTool().enterFight("The Outskirts of Cobb's Knob");

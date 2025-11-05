@@ -1,6 +1,6 @@
 package com.github.martinfrank.nethackagent.tools.skill;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.github.martinfrank.nethackagent.tools.adventure;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import com.github.martinfrank.nethackagent.tools.inventory.Inventory;
 import com.github.martinfrank.nethackagent.tools.inventory.InventoryTool;
 import com.github.martinfrank.nethackagent.tools.inventory.Item;
@@ -11,12 +11,15 @@ import net.sourceforge.kolmafia.KoLAdventure;
 import net.sourceforge.kolmafia.RequestThread;
 import net.sourceforge.kolmafia.persistence.AdventureDatabase;
 import net.sourceforge.kolmafia.request.LogoutRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class AdventureExeutionTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdventureExeutionTool.class);
 
     //FIXME wie in KolAdventureSummary als name bezeichnet
     @Tool(
@@ -36,7 +39,7 @@ public class AdventureExeutionTool {
         Inventory inventoryBefore = new Inventory(new InventoryTool().getInventory());
 
         KoLAdventure adventure = AdventureDatabase.getAdventure(adventureName);
-        System.out.println("you entered adventure: "+adventure.getAdventureName());
+        logger.info("you entered adventure: {}", adventure.getAdventureName());
         RequestThread.postRequest(adventure);
 
         KoLAdventure last = KoLAdventure.lastVisitedLocation();
@@ -61,7 +64,7 @@ public class AdventureExeutionTool {
             result.setAdventure(AdventureInfoTool.mapToSummary(last));
             result.setDeltaAdventures(deltaAdventures);
             result.setWasSuccess(true);
-            System.out.println(result);
+            logger.debug("Adventure result: {}", result);
             return result;
         }
 

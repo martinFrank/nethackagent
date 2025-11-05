@@ -1,19 +1,30 @@
 package com.github.martinfrank.nethackagent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MyAgentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MyAgentService.class);
+
     private final NethackAgent agent;
+    private final KnowHowAgent knowhowAgent;
 
     @Autowired
-    public MyAgentService(NethackAgent agent){
+    public MyAgentService(NethackAgent agent, KnowHowAgent knowhowAgent){
         this.agent = agent;
+        this.knowhowAgent = knowhowAgent;
     }
-    public void startAgent() {
-        System.out.println("starting agent...");
-        agent.runAgent();
+    public String runNethackAgent() {
+        logger.info("starting agent...");
+        return agent.runAgent();
+    }
+
+    public String runKnowhowAgent() {
+        logger.info("starting knowhowAgent...");
+        return knowhowAgent.runAgent();
     }
 }

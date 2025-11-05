@@ -45,6 +45,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-ollama</artifactId>
+            <version>1.0.3</version>
+        </dependency>
 
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
@@ -77,6 +82,11 @@
             </exclusions>
             <version>1.3.1</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel.quarkus</groupId>-->
+<!--            <artifactId>camel-quarkus-langchain4j-embeddings</artifactId>-->
+<!--            <version>3.27.0</version>-->
+<!--        </dependency>-->
 
 
 		<dependency>
@@ -88,19 +98,34 @@
                     <artifactId>langchain4j-pgvector</artifactId>
                 </exclusion>
             </exclusions>
-		    <version>1.7.1</version>
+		    <version>1.8.0</version>
 		</dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-document-transformer-jsoup</artifactId>
+            <version>1.8.0-beta15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-jsoup-document-reader</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-ollama</artifactId>
+            <version>1.8.0</version> <!-- oder aktuelle Version prüfen -->
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings</artifactId>
+            <version>1.8.0-beta15</version> <!-- Aktuelle Version prüfen -->
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-open-ai -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
             <version>1.7.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -112,6 +137,13 @@
             <artifactId>jsoup</artifactId>
             <version>1.21.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.github.furstenheim/copy_down -->
+        <dependency>
+            <groupId>io.github.furstenheim</groupId>
+            <artifactId>copy_down</artifactId>
+            <version>1.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>local.kolmafia</groupId>

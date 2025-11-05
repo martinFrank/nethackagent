@@ -1,17 +1,21 @@
+
 package com.github.martinfrank.nethackagent.tools.skill;
 
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.KoLCharacter;
 import net.sourceforge.kolmafia.persistence.SkillDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SkillTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(SkillTool.class);
 
     @Tool(
             name = "SkillTool"
@@ -21,7 +25,7 @@ public class SkillTool {
             """
     )
     public List<Skill> getSkills() {
-        System.out.println("using skill tool");
+        logger.debug("using skill tool");
         LoginManager.ensureLogin();
 
         List<Skill> skills = new ArrayList<>();
@@ -40,7 +44,7 @@ public class SkillTool {
             }
         }
 
-        skills.forEach(System.out::println);
+        skills.forEach(skill -> logger.debug(" - {}", skill));
 
         return skills;
     }

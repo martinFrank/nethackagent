@@ -6,12 +6,38 @@ docker run -d \
   -p 5432:5432 \
   ankane/pgvector
 
+//oder einzeilig:
 docker run -d --name postgres-pgvector -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres_secret -e POSTGRES_DB=nethackagent -p 5432:5432 ankane/pgvector
 
+
+//neue db anlegen, user/pass passend zu application.properties
 docker exec -it postgres-pgvector psql -U postgres -c 'create database nethackagent;'
 
+
+//vectorextension einschalten
 docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE EXTENSION IF NOT EXISTS vector;'
 
+
+//wir brauchen zwei tabellen, weil sie unterschiedlich grosse vector-dimensionen haben
+//eine für openapi (vectorgrösse 1356)
+CREATE TABLE public.openapi_embeddings (
+  embedding_id uuid NOT NULL,
+  	"text" text NULL,
+  	metadata json NULL,
+  	embedding VECTOR(1536),
+  	CONSTRAINT openapi_embeddings_pkey PRIMARY KEY (embedding_id)
+);
+
+//eine für ollama (vectorgrösse 1024)
+CREATE TABLE public.ollama_embeddings (
+  embedding_id uuid NOT NULL,
+  	"text" text NULL,
+  	metadata json NULL,
+  	embedding VECTOR(1024),
+  	CONSTRAINT ollama_embeddings_pkey PRIMARY KEY (embedding_id)
+);
+
+docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE TABLE public.chat_memory ( id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, message VARCHAR NULL, updated_at TIMESTAMP DEFAULT now() NULL,  message_type VARCHAR NULL, memory_id BIGINT NULL );'
 
 
 //für chatmemory
@@ -24,3 +50,12 @@ CREATE TABLE public.chat_memory (
 );
 
 docker exec -it postgres-pgvector psql -U postgres -d nethackagent -c 'CREATE TABLE public.chat_memory ( id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, message VARCHAR NULL, updated_at TIMESTAMP DEFAULT now() NULL,  message_type VARCHAR NULL, memory_id BIGINT NULL );'
+
+
+CREATE TABLE website
+(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    url     VARCHAR(255)          NULL,
+    summary VARCHAR(255)          NULL,
+    content VARCHAR(255)          NULL
+);

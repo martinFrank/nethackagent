@@ -1,13 +1,17 @@
 package com.github.martinfrank.nethackagent.tools.quest;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.persistence.QuestDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class QuestListTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuestListTool.class);
 
     @Tool(
             name = "KolQuestListTool"
@@ -18,22 +22,22 @@ public class QuestListTool {
             """
     )
     public List<Quest> getQuests() {
-        System.out.println("listQuests()");
+        logger.debug("listQuests()");
 
         LoginManager.ensureLogin();
 
         List<Quest> quests = Arrays.stream(QuestDatabase.Quest.values())
                 .filter(q ->
                         q.getPref().startsWith("questL") //council
-                        || q.getPref().startsWith("questG") //guild
-                        || q.getPref().startsWith("questM") //market
-                        || q.getPref().startsWith("questS") //sea
+                                || q.getPref().startsWith("questG") //guild
+                                || q.getPref().startsWith("questM") //market
+                                || q.getPref().startsWith("questS") //sea
                 ) //council
                 .map(QuestListTool::mapToQuest)
                 .toList();
 
-        System.out.println("quests");
-        quests.forEach(System.out::println);
+        logger.debug("quests:");
+        quests.forEach(quest -> logger.debug(" - {}", quest));
 
         return quests;
     }

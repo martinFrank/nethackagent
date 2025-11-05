@@ -1,70 +1,74 @@
 package com.github.martinfrank.nethackagent;
 
+import com.github.martinfrank.nethackagent.chatmemory.InMemoryChatMemory;
 import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import dev.langchain4j.chain.ConversationalRetrievalChain;
+import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.input.PromptTemplate;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.rag.DefaultRetrievalAugmentor;
+import dev.langchain4j.rag.RetrievalAugmentor;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class NethackChat {
+    private final ConversationalRetrievalChain chain;
+    private final ChatModel model;
 
-    public static void main(String[] args) {
-        new NethackChat().runChat();
-    }
-
-    public void runChat() {
-
-        OpenAiChatModel model = OpenAiChatModel.builder()
-                .apiKey(OpenAiConfig.OPENAI_API_KEY)
-                .modelName("gpt-4o") // oder z.B. "gpt-3.5-turbo"
-//            .modelName("gpt-3.5-turbo") // oder z.B. "gpt-3.5-turbo"
-                .build();
-
-        OpenAiEmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
-                .apiKey(OpenAiConfig.OPENAI_API_KEY)
-                .modelName("text-embedding-3-small")
-                .build();
+    @Autowired
+    public NethackChat(LlmModelService llmModelService) {
+        model = llmModelService.getChatModel();
+        EmbeddingModel embeddingModel = llmModelService.getEmbeddingModel();
 
         EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
 
         EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(store)
                 .embeddingModel(embeddingModel)
-                .maxResults(5)
-                .minScore(0.5)
+                .maxResults(12)
+                .minScore(0.3)
                 .build();
 
-        // (2) Eigener PromptTemplate für System- und User-Prompt
-        PromptTemplate template = PromptTemplate.from(
-                "System: Du bist ein hilfreicher AI-Assistent.\n"
-                        + "Kontext: {context}\n"
-                        + "Vergangene Unterhaltung: {chat_history}\n"
-                        + "User: {question}\n"
-        );
+        RetrievalAugmentor augmentor = createAugmentor(retriever);
 
-//        DefaultRetrievalAugmentor augmentor = DefaultRetrievalAugmentor.builder()
-//                .contentRetriever(retriever)
-//                .
-//                .promptTemplate(template)
-//                .build();
-
-        // (5) ConversationalRetrievalChain bauen
-        ConversationalRetrievalChain chain = ConversationalRetrievalChain.builder()
+        chain = ConversationalRetrievalChain.builder()
                 .chatModel(model)
-//                .retrievalAugmentor(augmentor)
-                .chatMemory(new MyChatMemory())
-                .contentRetriever(retriever)
+                .chatMemory(new InMemoryChatMemory())
+//                .contentRetriever(retriever)
+                .retrievalAugmentor(augmentor)
                 .build();
-
-        // (6) Nutzeranfrage ausführen
-//        String antwort = chain.execute("welche gegenstände von Kingdom of loathing kennst du? liste nur items auf die aus dem embedding her kennst. Die liste sollte min 20 items enthalten");
-        String antwort = chain.execute("erkläre mir, was man alles tun muss im in Kingdom of Loathing zur Ascension zu kommen? nutze nur informationen aus dem embedding.");
-//        String antwort = chain.execute("welche gegenstände geben denn viel feuerschaden? erkläre mir nur sachen, die du aus dem embedding her kennst");
-        System.out.println(antwort);
     }
 
+    public String askChain(String question) {
+//        String strict = " Nutze nur Informationen aus dem embedding.";
+//            String antwort = chain.execute("erkläre mir, was man alles tun muss im in Kingdom of Loathing zur Ascension zu kommen? nutze nur informationen aus dem embedding.");
+        return chain.execute(question);
+    }
+
+    public String askModel(String question) {
+//        String strict = " Nutze nur Informationen aus dem embedding.";
+//            String antwort = chain.execute("erkläre mir, was man alles tun muss im in Kingdom of Loathing zur Ascension zu kommen? nutze nur informationen aus dem embedding.");
+
+        return model.chat(question);
+    }
+
+    private RetrievalAugmentor createAugmentor(ContentRetriever retriever) {
+        return DefaultRetrievalAugmentor.builder()
+                .contentRetriever(retriever)
+                .contentInjector((contentList, chatMessage) -> {
+                    if(chatMessage instanceof UserMessage userMessage) {
+                        StringBuilder prompt = new StringBuilder(userMessage.singleText());
+                        prompt.append("\nPlease, only use the following information:\n");
+                        contentList.forEach(content -> prompt.append("- ").append(content.textSegment().text()).append("\n"));
+                        return new UserMessage(prompt.toString());
+                    }
+                    return chatMessage;
+                })
+                .build();
+    }
 }

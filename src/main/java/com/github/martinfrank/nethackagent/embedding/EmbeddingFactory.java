@@ -12,6 +12,13 @@ public class EmbeddingFactory {
 
     public static EmbeddingStore<TextSegment> createEmbeddingStore() {
         Properties config = readConfig();
+        String host = readHost(config);
+        int port = readPort(config);
+        String database = readDatabase(config);
+        String user = readUser(config);
+        String pass = readPass(config);
+        String table = readTable(config);
+        int dimension = readDimension(config);
 
         return PgVectorEmbeddingStore.builder()
                 .host(readHost(config))
@@ -53,11 +60,21 @@ public class EmbeddingFactory {
     }
 
     public static String readTable(Properties config) {
-        return config.get("langchain4j.pgvector.table").toString();
+        String selection = config.get("langchain4j.model.selector").toString();
+        return switch (selection){
+            case "ollama" -> config.get("ollama.embedding.table").toString();
+            case "openapi" -> config.get("openapi.embedding.table").toString();
+            default -> throw new IllegalArgumentException("unsupported model (not one of [ollama,openapi]");
+        };
     }
 
     public static int readDimension(Properties config) {
-        return Integer.parseInt(config.get("langchain4j.pgvector.dimension").toString());
+        String selection = config.get("langchain4j.model.selector").toString();
+        return switch (selection){
+            case "ollama" -> Integer.parseInt(config.get("ollama.embedding.dimension").toString());
+            case "openapi" -> Integer.parseInt(config.get("openapi.embedding.dimension").toString());
+            default -> throw new IllegalArgumentException("unsupported model (not one of [ollama,openapi]");
+        };
     }
 
     public static Properties readConfig() {
