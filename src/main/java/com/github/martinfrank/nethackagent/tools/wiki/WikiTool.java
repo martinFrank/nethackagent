@@ -1,101 +1,120 @@
 package com.github.martinfrank.nethackagent.tools.wiki;
 
-import com.github.martinfrank.nethackagent.OpenAiConfig;
-import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
+import com.github.martinfrank.nethackagent.embedding.WikiDocumentService;
+import com.github.martinfrank.nethackagent.embedding.WikiMdDocument;
 import dev.langchain4j.agent.tool.Tool;
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.loader.UrlDocumentLoader;
-import dev.langchain4j.data.document.parser.TextDocumentParser;
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
-import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import dev.langchain4j.data.document.DocumentSource;
+import dev.langchain4j.data.document.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
+@Component
 public class WikiTool {
 
     private static final Logger logger = LoggerFactory.getLogger(WikiTool.class);
+    private final WikiDocumentService websiteService;
 
-    @Tool(
-            name = "WikiTool",
+    @Autowired
+    public WikiTool(WikiDocumentService websiteService) {
+        this.websiteService = websiteService;
+    }
+
+    @Tool(name = "WikiTool",
             value = """
-            diese Tool kann Detail-Informationen zum Spiel liefern. Es ist ein online
-            Tool, das Informationen aus der "Kingdom of Loathing" Wiki Seite
-            holen kann. Es kann Informationen über Items, Skills und Adventure liefern.
-            Dazu wird der name des Skills, bzw name des Items bzw, name des Adventures
-            als searchTerm verwendet.
-            
-            Das Resultat wird direkt in das Embedding geschrieben und steht dir
-            somit direkt zur Verfügung. Der Rückgabewert ist true, falls das
-            embedding funktioniert hat, der Rückgabewert ist fals, wenn es Probleme
-            gegeben hat.
-            """
-    )
-    public boolean kolWikiSearch(String searchTerm) {
-        logger.info("KoL Search Tool: searching for '{}'", searchTerm);
-//        String preparedSearchTerm = searchTerm.replace("\\s*", "%20");
-//        String url = "https://wiki.kingdomofloathing.com/index.php?search="+searchTerm;
-        String startUrl = "https://kol.coldfront.net/thekolwiki/index.php?search="+searchTerm+"&title=Special%3ASearch&go=Go";
-        logger.debug("startUrl {}", startUrl);
-
-
-        var embeddingModel = OpenAiEmbeddingModel.builder()
-                .apiKey(OpenAiConfig.OPENAI_API_KEY)
-                .modelName("text-embedding-3-small")
-                .build();
-
-        EmbeddingStore store = EmbeddingFactory.createEmbeddingStore();
-
-        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
-                .embeddingStore(store)
-                .embeddingModel(embeddingModel)
-                .documentSplitter(DocumentSplitters.recursive(500, 100))
-                .build();
-
-        logger.debug("ready to read!!");
-
-        try {
-
-            String url = getFinalRedirectedUrl(startUrl);
-            logger.debug("url {}", url);
-
-            Document wikiDoc = UrlDocumentLoader.load(url, new TextDocumentParser());
-            ingestor.ingest(wikiDoc);
-            return true;
-        } catch (Exception e) {
-            logger.error("error: ", e);
-        }
-        return false;
+                    mit diesem Tool kannst du direkt auf externe Links von Kingdom of loathing zugreifen. Verwende
+                    dieses tool, um den Inhalt der Url auszulesen. 
+                    """)
+    public String lookupPage(String url) throws IOException {
+        logger.info("lookupPage: {}", url);
+        WikiMdDocument mdDocument = websiteService.loadUrl(url);
+        logger.info("mdDocument: {}", mdDocument);
+        return mdDocument.text();
     }
 
+//    private static final Logger logger = LoggerFactory.getLogger(WikiTool.class);
+//
+//    @Tool(name = "WikiTool",
+//            value = """
+//                    mit diesem Tool kannst du Fachartikel zu Kingdom of loathing nachlesen. Verwende dieses tool, um
+//                    Details zu einem Thema nachzuschlagen. Die Gelesenen Artikel werden auch in dein Embedding
+//                    eingetragen, damit diese Informationen dauerhaft verfügbar sind.
+//                    """)
+//    public String lookupPage(String url) throws IOException {
+//        logger.info("readWebsite {}", url);
+//        if (!WhiteList.isWhiteListed(url)) {
+//            logger.info("website {} is not witelisted", url);
+//            return "webseite ist nicht white-listed";
+//        }
+//
+//        Optional<WebsiteEntity> result = websiteService.findByUrl(url);
+//        if (result.isPresent()) {
+//            return result.get().toJson();
+//        }
+//
+//        WebsiteEntity newEntry = scrapeWebsite(url);
+//        websiteService.save(newEntry);
+//        saveSummaryInEmbedding(newEntry);
+//        return newEntry.toJson();
+//    }
+//
+//    private void saveSummaryInEmbedding(WebsiteEntity newEntry) {
+//        EmbeddingModel embeddingModel = llmModelService.getEmbeddingModel();
+//        EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
+//        DocumentSource source = createDocument(newEntry.getSummary(), newEntry.getUrl());
+//        Document doc = DocumentLoader.load(source, new TextDocumentParser());
+//        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+//                .embeddingStore(store)
+//                .embeddingModel(embeddingModel)
+//                .documentSplitter(DocumentSplitters.recursive(500, 100))
+//                .build();
+//        ingestor.ingest(doc);
+//    }
+//
+//    private WebsiteEntity scrapeWebsite(String url) throws IOException {
+//        org.jsoup.nodes.Document doc = Jsoup.connect(url)
+//                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+//                        "(KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")
+//                .timeout(10000)
+//                .get();
+//
+//        SystemMessage systemMessage = new SystemMessage("""
+//                Du bist ein erfahrener Text-Zusammenfasser. Deine Aufgabe ist es, die wesentlichen Inhalte der folgenden
+//                Website klar, prägnant und verständlich zusammenzufassen. Achte darauf, dass die Zusammenfassung in gut
+//                lesbarem Deutsch verfasst ist und die wichtigsten Themen, Fakten und Aussagen der Website abdeckt, ohne
+//                überflüssige Details. Erstelle eine kurze Übersicht, die sowohl den Kerninhalt als auch relevante
+//                Schwerpunkte wiedergibt
+//                """);
+//        UserMessage htmlMessage = new UserMessage(doc.text());
+//        String summary = llmModelService.getChatModel().chat(systemMessage, htmlMessage).aiMessage().text();
+//        logger.info("summary of {} : {}", url, summary);
+//        WebsiteEntity result = new WebsiteEntity();
+//        result.setSummary(summary);
+//        result.setUrl(url);
+//        result.setContent(doc.html());
+//        return result;
+//    }
 
-    public static String getFinalRedirectedUrl(String url) throws IOException {
-        HttpURLConnection connection;
-        String newUrl = url;
 
-        while (true) {
-            connection = (HttpURLConnection) new URL(newUrl).openConnection();
-            connection.setInstanceFollowRedirects(false); // automatische Weiterleitung ausschalten
-            connection.connect();
-
-            int status = connection.getResponseCode();
-            if (status == HttpURLConnection.HTTP_MOVED_PERM ||
-                    status == HttpURLConnection.HTTP_MOVED_TEMP ||
-                    status == HttpURLConnection.HTTP_SEE_OTHER) {
-
-                String location = connection.getHeaderField("Location");
-                newUrl = location.startsWith("http") ? location : new URL(new URL(newUrl), location).toString();
-            } else {
-                break;
+    public static DocumentSource createDocument(String content, String url) {
+        return new DocumentSource() {
+            @Override
+            public InputStream inputStream() {
+                return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
             }
-        }
 
-        return newUrl;
+            @Override
+            public Metadata metadata() {
+                Metadata metadata = new Metadata();
+                metadata.put("url", url);
+                return metadata;
+            }
+        };
     }
-
 }

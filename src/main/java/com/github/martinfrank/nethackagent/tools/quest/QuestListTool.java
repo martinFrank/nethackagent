@@ -1,6 +1,6 @@
 package com.github.martinfrank.nethackagent.tools.quest;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.persistence.QuestDatabase;
 import org.slf4j.Logger;

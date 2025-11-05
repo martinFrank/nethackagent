@@ -1,4 +1,4 @@
-package com.github.martinfrank.nethackagent.embedding;
+package com.github.martinfrank.nethackagent.scraping;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class WebCrawler {
 
@@ -20,6 +22,7 @@ public class WebCrawler {
     public WebCrawler(Set<String> visited) {
         this.visited = visited;
     }
+
     public WebCrawler() {
         this(new HashSet<>());
     }
@@ -31,7 +34,7 @@ public class WebCrawler {
         }
 
         try {
-            logger.debug("size = {}  still Crawling: {}", visited.size(), url);
+            logger.info("size = {}  still Crawling: {}", visited.size(), url);
             visited.add(url);
 
             Document doc = Jsoup.connect(url)
@@ -44,15 +47,31 @@ public class WebCrawler {
             Elements links = doc.select("a[href]");
             for (Element link : links) {
                 String next = link.absUrl("href");
-                //alle ? nicht alle! nur Seiten, die von der haputseite abzweigen, ekine external links verfolgen
+                //alle? nicht alle! nur Seiten, die von der haputseite abzweigen, ekine external links verfolgen
                 if (next.startsWith(url) || next.startsWith(getBaseUrl(url))) {
                     crawl(next, depth - 1);
                 }
             }
-
         } catch (IOException e) {
             logger.error("Fehler beim Laden: {} -> {}", url, e.getMessage());
         }
+    }
+
+    public static boolean isFiltered(String url) {
+        List<Pattern> goodPatterns = List.of(
+                Pattern.compile("https://.*/Category:.*")
+                , Pattern.compile("https://.*/.Category:.*"));
+        List<Pattern> badPatterns = List.of(
+                Pattern.compile("https://.*/.*#.*")
+                , Pattern.compile("https://.*/.*:.*")
+                , Pattern.compile("https://.*/index.php.*"));
+
+        boolean isGood = goodPatterns.stream().anyMatch(p -> p.matcher(url).matches());
+        boolean isBad = badPatterns.stream().anyMatch(p -> p.matcher(url).matches());
+        if (isBad && isGood) {
+            return false;
+        }
+        return isBad;
     }
 
     private String getBaseUrl(String url) {
@@ -63,5 +82,4 @@ public class WebCrawler {
     public Set<String> getVisited() {
         return visited;
     }
-
 }

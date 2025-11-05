@@ -1,6 +1,6 @@
 package com.github.martinfrank.nethackagent.tools.adventure;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import com.github.martinfrank.nethackagent.tools.inventory.Inventory;
 import com.github.martinfrank.nethackagent.tools.inventory.InventoryTool;
 import com.github.martinfrank.nethackagent.tools.inventory.Item;
@@ -14,7 +14,6 @@ import net.sourceforge.kolmafia.request.LogoutRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

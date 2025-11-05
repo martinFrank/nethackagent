@@ -1,8 +1,7 @@
 package com.github.martinfrank.nethackagent.tools.inventory;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
-import net.sourceforge.kolmafia.objectpool.ItemPool;
 import net.sourceforge.kolmafia.persistence.ItemDatabase;
 import net.sourceforge.kolmafia.session.InventoryManager;
 import org.slf4j.Logger;

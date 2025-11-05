@@ -11,13 +11,20 @@ public class MyAgentService {
     private static final Logger logger = LoggerFactory.getLogger(MyAgentService.class);
 
     private final NethackAgent agent;
+    private final KnowHowAgent knowhowAgent;
 
     @Autowired
-    public MyAgentService(NethackAgent agent){
+    public MyAgentService(NethackAgent agent, KnowHowAgent knowhowAgent){
         this.agent = agent;
+        this.knowhowAgent = knowhowAgent;
     }
-    public void startAgent() {
+    public String runNethackAgent() {
         logger.info("starting agent...");
-        agent.runAgent();
+        return agent.runAgent();
+    }
+
+    public String runKnowhowAgent() {
+        logger.info("starting knowhowAgent...");
+        return knowhowAgent.runAgent();
     }
 }

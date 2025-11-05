@@ -2,7 +2,7 @@
 package com.github.martinfrank.nethackagent.tools.skill;
 
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.KoLCharacter;
 import net.sourceforge.kolmafia.persistence.SkillDatabase;
@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SkillTool {
 

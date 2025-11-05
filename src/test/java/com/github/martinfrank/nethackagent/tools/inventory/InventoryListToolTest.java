@@ -1,7 +1,6 @@
 package com.github.martinfrank.nethackagent.tools.inventory;
 
-import com.github.martinfrank.nethackagent.LoginManager;
-import org.junit.jupiter.api.Test;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 
 import java.util.List;
 

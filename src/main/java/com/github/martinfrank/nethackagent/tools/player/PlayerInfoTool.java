@@ -1,6 +1,6 @@
 package com.github.martinfrank.nethackagent.tools.player;
 
-import com.github.martinfrank.nethackagent.LoginManager;
+import com.github.martinfrank.nethackagent.tools.LoginManager;
 import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfoTool;
 import dev.langchain4j.agent.tool.Tool;
 import net.sourceforge.kolmafia.KoLAdventure;
