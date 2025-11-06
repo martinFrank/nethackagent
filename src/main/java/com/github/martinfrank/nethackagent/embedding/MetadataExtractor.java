@@ -1,16 +1,7 @@
 package com.github.martinfrank.nethackagent.embedding;
 
-import com.github.martinfrank.nethackagent.LlmModelService;
 import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.message.SystemMessage;
-import dev.langchain4j.data.message.UserMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 

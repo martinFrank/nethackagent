@@ -28,7 +28,6 @@ public class NethackAgent {
 
     private final PersistentMemoryProvider memoryProvider;
     private final LlmModelService llmModelService;
-
     private final WikiTool wikiTool;
 
 

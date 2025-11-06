@@ -27,7 +27,7 @@ public class EquipmentTool {
             """
     )
     public List<Item> getEquipment() {
-        logger.debug("using equipment tool");
+        logger.info("using EquipmentTool.getEquipment()");
         LoginManager.ensureLogin();
 
         Map<Integer, String> rawItems = ItemDatabase.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -46,7 +46,7 @@ public class EquipmentTool {
                 items.add(item);
             }
         }
-        items.forEach(item -> logger.debug(" - {}", item));
+        items.forEach(item -> logger.debug(item.toString()));
 
         return items;
     }

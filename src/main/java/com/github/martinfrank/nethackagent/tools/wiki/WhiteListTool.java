@@ -1,8 +1,12 @@
 package com.github.martinfrank.nethackagent.tools.wiki;
 
 import dev.langchain4j.agent.tool.Tool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WhiteListTool {
+
+    private static final Logger logger = LoggerFactory.getLogger(WhiteListTool.class);
 
     @Tool(name = "WhiteListTool",
             value = """
@@ -11,6 +15,7 @@ public class WhiteListTool {
                     wikiUrl zu finden. ein guter anfang zu suchen ist die wiki main page 'https://wiki.kingdomofloathing.com/Main_Page'
                     """)
     public String[] getWhiteListed(){
+        logger.info("using SkillTool.getSkills()");
         return WhiteList.getWhiteList().toArray(new String[]{});
     }
 }

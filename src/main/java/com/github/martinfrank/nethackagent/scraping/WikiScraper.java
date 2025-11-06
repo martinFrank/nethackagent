@@ -52,7 +52,6 @@ public class WikiScraper {
     }
 
     private static void removeNeedsContent(Elements content) {
-//        Elements elements = content.select("/html/body/div/div/table[1]");
         Elements elements = content.select(".mw-content-ltr > table:nth-child(1)");
         if (!elements.isEmpty()) {
             elements.forEach(Node::remove);
@@ -75,7 +74,7 @@ public class WikiScraper {
         }
 
         // Kopfzeile aus der ersten Zeile (alle Zellen)
-        Elements firstRowCells = rows.get(0).children();
+        Elements firstRowCells = rows.getFirst().children();
 
         md.append("| ");
         for (Element cell : firstRowCells) {
@@ -85,9 +84,7 @@ public class WikiScraper {
 
         // Trennlinie mit derselben Spaltenanzahl
         md.append("| ");
-        for (int i = 0; i < firstRowCells.size(); i++) {
-            md.append("--- | ");
-        }
+        md.append("--- | ".repeat(firstRowCells.size()));
         md.append("\n");
 
         // Datenzeilen ab 1, alle Zellen (th + td)

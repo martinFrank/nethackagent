@@ -5,7 +5,6 @@ import com.github.martinfrank.nethackagent.scraping.WikiScraper;
 import com.github.martinfrank.nethackagent.tools.wiki.WhiteList;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.document.splitter.DocumentByParagraphSplitter;
 import dev.langchain4j.data.document.splitter.DocumentByRegexSplitter;
 import dev.langchain4j.data.document.splitter.DocumentBySentenceSplitter;
 import dev.langchain4j.data.segment.TextSegment;

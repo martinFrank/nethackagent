@@ -21,8 +21,7 @@ public class PlayerInfoTool {
             """
     )
     public PlayerInfo getPlayerInfo() {
-
-        logger.debug("using playerInfoTool...");
+        logger.info("using PlayerInfoTool.getPlayerInfo()");
         LoginManager.ensureLogin();
 
 

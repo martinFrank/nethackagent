@@ -1,17 +1,8 @@
 package com.github.martinfrank.nethackagent;
 
 import com.github.martinfrank.nethackagent.chatmemory.InMemoryChatMemory;
-import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
 import dev.langchain4j.chain.ConversationalRetrievalChain;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
-import dev.langchain4j.rag.RetrievalAugmentor;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
-import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

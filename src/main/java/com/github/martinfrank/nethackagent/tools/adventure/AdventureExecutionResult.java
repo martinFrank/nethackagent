@@ -2,7 +2,6 @@ package com.github.martinfrank.nethackagent.tools.adventure;
 
 import com.github.martinfrank.nethackagent.tools.inventory.Item;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdventureExecutionResult {

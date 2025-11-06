@@ -1,17 +1,17 @@
 package com.github.martinfrank.nethackagent.tools.wiki;
 
-import com.github.martinfrank.nethackagent.embedding.EmbeddingFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class WhiteList {
 
-    private static List<String> list = new ArrayList<>();
+    private static final List<String> list = new ArrayList<>();
 
     public static boolean isWhiteListed(String url){
         if (list.isEmpty()){

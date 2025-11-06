@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 
 //Agenten können keine Records verarbeiten
 public class PlanValidationRequest {
-    public String planRequest;
-    public String planResult;
+    public final String planRequest;
+    public final String planResult;
 
     public PlanValidationRequest(String planRequest, String planResult) {
         this.planRequest = planRequest;

@@ -21,7 +21,7 @@ public class AdventureInfoTool {
             """
     )
     public List<AdventureInfo> getAdventures() {
-        logger.debug("using AdventureInfoTool...");
+        logger.info("using AdventureInfoTool.getAdventures()");
 
         LoginManager.ensureLogin();
 
@@ -32,9 +32,7 @@ public class AdventureInfoTool {
                 .filter(adv -> adv.getAdventureNumber() >= 0)
                 .filter(AdventureInfo::isCanAdventure)
                 .toList();
-
-        logger.debug("adventures:");
-        adventures.forEach(adv -> logger.debug(" - {}", adv));
+        adventures.forEach(adv -> logger.debug(adv.toString()));
 
         return adventures;
     }

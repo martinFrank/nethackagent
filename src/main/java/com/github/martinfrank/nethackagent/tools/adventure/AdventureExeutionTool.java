@@ -25,21 +25,22 @@ public class AdventureExeutionTool {
     @Tool(
             name = "EnterAdventureTool"
             , value = """
-            Mit diesem Tool betritt ein Spieler das Abenteuer und schaltet somit den
-            Kampfablauf frei. Ein Abenteuer kann nur verlassen werden, indem man
-            gewinnt oder stirbt. Es kann mehrere Runden dauern, bis der Kampf vorbei ist.
+            Mit diesem Tool betritt ein Spieler das Abenteuer im Spiel Kingdom of Loathing und schaltet somit den
+            Kampfablauf frei. Ein Abenteuer kann nur verlassen werden, indem man gewinnt oder stirbt. Es kann mehrere
+            Runden dauern, bis der Kampf vorbei ist.
             
             Der Parameter für dieses Tool ist der Name des Abenteuers.
             """
     )
     public AdventureExecutionResult execute(String adventureName) {
+        logger.info("executing Tool: AdventureExeutionTool.execute({})", adventureName);
         LoginManager.ensureLogin();
 
         PlayerInfo playerBefore = new PlayerInfoTool().getPlayerInfo();
         Inventory inventoryBefore = new Inventory(new InventoryTool().getInventory());
 
         KoLAdventure adventure = AdventureDatabase.getAdventure(adventureName);
-        logger.info("you entered adventure: {}", adventure.getAdventureName());
+        logger.debug("you entered adventure: {}", adventure.getAdventureName());
         RequestThread.postRequest(adventure);
 
         KoLAdventure last = KoLAdventure.lastVisitedLocation();
