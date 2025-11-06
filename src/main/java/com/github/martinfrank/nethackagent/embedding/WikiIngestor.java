@@ -83,8 +83,6 @@ public class WikiIngestor {
         return EmbeddingStoreIngestor.builder()
                 .embeddingStore(store)
                 .embeddingModel(embeddingModel)
-//                .documentSplitter(new DocumentByRegexSplitter("^#{1,6}\\s", "\n\n", 3000, 500))
-//                .documentSplitter(new DocumentByParagraphSplitter("^#{1,6}\\s", "\n\n", 3000, 500))
                 .documentSplitter(regexSplitter)
                 .build();
     }

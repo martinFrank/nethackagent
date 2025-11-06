@@ -1,11 +1,14 @@
 package com.github.martinfrank.nethackagent.embedding;
 
+import com.github.martinfrank.nethackagent.tools.wiki.WhiteList;
 import com.google.gson.Gson;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,4 +50,5 @@ public class WikiDocumentService {
         String url = metadata.getString("url");
         return new WikiMdDocument(url, mdDocument, metadata);
     }
+
 }

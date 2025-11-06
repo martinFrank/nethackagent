@@ -23,23 +23,10 @@ public class NethackChat {
     @Autowired
     public NethackChat(LlmModelService llmModelService) {
         model = llmModelService.getChatModel();
-        EmbeddingModel embeddingModel = llmModelService.getEmbeddingModel();
-
-        EmbeddingStore<TextSegment> store = EmbeddingFactory.createEmbeddingStore();
-
-        EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(store)
-                .embeddingModel(embeddingModel)
-                .maxResults(12)
-                .minScore(0.3)
-                .build();
-
-        RetrievalAugmentor augmentor = createAugmentor(retriever);
-
+        RetrievalAugmentor augmentor = llmModelService.createAugmentor(12, 05.);
         chain = ConversationalRetrievalChain.builder()
                 .chatModel(model)
                 .chatMemory(new InMemoryChatMemory())
-//                .contentRetriever(retriever)
                 .retrievalAugmentor(augmentor)
                 .build();
     }
@@ -57,18 +44,4 @@ public class NethackChat {
         return model.chat(question);
     }
 
-    private RetrievalAugmentor createAugmentor(ContentRetriever retriever) {
-        return DefaultRetrievalAugmentor.builder()
-                .contentRetriever(retriever)
-                .contentInjector((contentList, chatMessage) -> {
-                    if(chatMessage instanceof UserMessage userMessage) {
-                        StringBuilder prompt = new StringBuilder(userMessage.singleText());
-                        prompt.append("\nPlease, only use the following information:\n");
-                        contentList.forEach(content -> prompt.append("- ").append(content.textSegment().text()).append("\n"));
-                        return new UserMessage(prompt.toString());
-                    }
-                    return chatMessage;
-                })
-                .build();
-    }
 }

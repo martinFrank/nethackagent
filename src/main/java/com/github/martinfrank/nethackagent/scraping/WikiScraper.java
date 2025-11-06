@@ -32,16 +32,29 @@ public class WikiScraper {
             replaceLinksWithText(content);
             createTables(content);
             String md = toMarkDown(content.html());
+            md = removeCollection(md);
             return md;
         } catch (Exception e) {
             return "Fehler! da hat was nicht geklappt!!";
         }
     }
 
+    private String removeCollection(String document) {
+        String searchText = """
+                Collection
+                ----------
+                """;
+        int index = document.lastIndexOf(searchText);
+        if (index > 0) {
+            return document.substring(0, index);
+        }
+        return document;
+    }
+
     private static void removeNeedsContent(Elements content) {
 //        Elements elements = content.select("/html/body/div/div/table[1]");
         Elements elements = content.select(".mw-content-ltr > table:nth-child(1)");
-        if(!elements.isEmpty()){
+        if (!elements.isEmpty()) {
             elements.forEach(Node::remove);
         }
     }
@@ -91,9 +104,9 @@ public class WikiScraper {
     }
 
 
-    private static String toMarkDown(String html){
+    private static String toMarkDown(String html) {
         CopyDown converter = new CopyDown();
-        String md = converter.convert(html); 
+        String md = converter.convert(html);
 
         //io.github.furstenheim.CopyDown hat Probleme mit underscores - hier ist der fix
         Pattern brokenUnderlinePattern = Pattern.compile("\\\\_");
@@ -102,7 +115,6 @@ public class WikiScraper {
 
         //remove needs content:
         return fixedUnterlines.replaceAll("\\| \\|", "| \n|");
-
     }
 
     private static void replaceLinksWithText(Elements elements) {
@@ -113,15 +125,15 @@ public class WikiScraper {
 
             //full qualified urls
             if (href.startsWith("/")) {
-                href = "(https://wiki.kingdomofloathing.com" + href+")";
+                href = "(https://wiki.kingdomofloathing.com" + href + ")";
             }
 
             //remove internal links
-            if(href.contains("#")){
+            if (href.contains("#")) {
                 href = "";
             }
 
-            if(href.contains("File:")){
+            if (href.contains("File:")) {
                 href = "";
             }
 
