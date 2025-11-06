@@ -22,7 +22,7 @@ public class QuestListTool {
             """
     )
     public List<Quest> getQuests() {
-        logger.debug("listQuests()");
+        logger.info("using QuestListTool.getQuests()");
 
         LoginManager.ensureLogin();
 
@@ -36,8 +36,7 @@ public class QuestListTool {
                 .map(QuestListTool::mapToQuest)
                 .toList();
 
-        logger.debug("quests:");
-        quests.forEach(quest -> logger.debug(" - {}", quest));
+        quests.forEach(quest -> logger.debug(quest.toString()));
 
         return quests;
     }

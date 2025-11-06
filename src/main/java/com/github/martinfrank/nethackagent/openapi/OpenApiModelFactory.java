@@ -5,8 +5,6 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-
 @Component
 public class OpenApiModelFactory {
 

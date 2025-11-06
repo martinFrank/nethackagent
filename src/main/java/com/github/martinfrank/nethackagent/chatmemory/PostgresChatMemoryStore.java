@@ -1,6 +1,5 @@
 package com.github.martinfrank.nethackagent.chatmemory;
 
-import com.github.martinfrank.nethackagent.tools.wiki.WikiTool;
 import com.google.gson.Gson;
 import dev.langchain4j.data.message.*;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;

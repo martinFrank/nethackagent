@@ -25,7 +25,7 @@ public class SkillTool {
             """
     )
     public List<Skill> getSkills() {
-        logger.debug("using skill tool");
+        logger.info("using SkillTool.getSkills()");
         LoginManager.ensureLogin();
 
         List<Skill> skills = new ArrayList<>();
@@ -44,7 +44,7 @@ public class SkillTool {
             }
         }
 
-        skills.forEach(skill -> logger.debug(" - {}", skill));
+        skills.forEach(skill -> logger.debug(skill.toString()));
 
         return skills;
     }

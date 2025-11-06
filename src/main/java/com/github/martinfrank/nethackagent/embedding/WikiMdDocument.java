@@ -24,4 +24,8 @@ public class WikiMdDocument implements Document {
     public Metadata metadata() {
         return metadata;
     }
+
+    public String getUrl() {
+        return url;
+    }
 }

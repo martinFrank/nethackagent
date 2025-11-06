@@ -24,7 +24,7 @@ public class KolWikiScraper {
         this.modelFactory = modelFactory;
     }
 
-    public void initWiki() throws IOException {
+    public void initWiki() {
         logger.info("start scraping kol wiki main page");
         ArrayList<String> lines = new ArrayList<>();
         try(InputStream inputStream = KolWikiScraper.class

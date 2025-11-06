@@ -2,8 +2,6 @@ package com.github.martinfrank.nethackagent.tools.player;
 
 import com.github.martinfrank.nethackagent.tools.adventure.AdventureInfo;
 
-import java.util.Optional;
-
 public class PlayerInfo {
     private String username;
     private String password;

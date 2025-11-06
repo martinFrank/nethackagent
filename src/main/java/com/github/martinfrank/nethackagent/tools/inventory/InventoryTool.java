@@ -23,7 +23,7 @@ public class InventoryTool {
             """
     )
     public List<Item> getInventory() {
-        logger.debug("using inventory tool");
+        logger.info("using InventoryTool.getInventory()");
         LoginManager.ensureLogin();
 
         Map<Integer, String> rawItems = ItemDatabase.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -44,7 +44,7 @@ public class InventoryTool {
             }
         }
 
-        items.forEach(item -> logger.debug(" - {}", item));
+        items.forEach(item -> logger.debug(item.toString()));
 
         return items;
     }

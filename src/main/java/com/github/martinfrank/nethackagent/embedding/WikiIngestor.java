@@ -5,7 +5,6 @@ import com.github.martinfrank.nethackagent.scraping.WikiScraper;
 import com.github.martinfrank.nethackagent.tools.wiki.WhiteList;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.document.splitter.DocumentByParagraphSplitter;
 import dev.langchain4j.data.document.splitter.DocumentByRegexSplitter;
 import dev.langchain4j.data.document.splitter.DocumentBySentenceSplitter;
 import dev.langchain4j.data.segment.TextSegment;
@@ -83,8 +82,6 @@ public class WikiIngestor {
         return EmbeddingStoreIngestor.builder()
                 .embeddingStore(store)
                 .embeddingModel(embeddingModel)
-//                .documentSplitter(new DocumentByRegexSplitter("^#{1,6}\\s", "\n\n", 3000, 500))
-//                .documentSplitter(new DocumentByParagraphSplitter("^#{1,6}\\s", "\n\n", 3000, 500))
                 .documentSplitter(regexSplitter)
                 .build();
     }
